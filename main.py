@@ -39,7 +39,7 @@ for i in range(Y.size):
 
 #%% División de los datos
 
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=1/5, random_state=0)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.30, random_state=0)
 
 #%% Correlacion entre las variables
 
@@ -52,8 +52,42 @@ sns.relplot()
 
 
 
+
+
+#%% Media y varianza
+
+var = np.var(X_train, axis=0).mean() 
+media = np.mean(X_train, axis=0).mean()
+
+print('Varianza: ', var)
+print('Media: ', media)
+#%% Standarizacion
+####
+#### NORMALIZACIÓN
+####
+
+scaler = StandardScaler()
+
+#Ajusto el normalizador a mi muestra para que calcule la media y la desviación típica
+scaler.fit(X_train)
+
+X_train = scaler.transform(X_train)
+
+#%% Media y varianza post standar
+
+var = np.var(X_train, axis=0).mean() 
+media = np.mean(X_train, axis=0).mean()
+
+print('Varianza: ', var)
+print('Media: ', media)
+#%% Reducción de dimensionalidad
+
+pca = PCA(0.95, svd_solver='full')
+
+X_train = pca.fit_transform(X_train, Y_train)
+
 #%% Embedd 2D
-#X_embedded = TSNE(n_components=2).fit_transform(X_train)
+X_embedded = TSNE(n_components=2).fit_transform(X_train)
 
 #%% Visualizacion 2D
 plt.scatter(X_embedded[:,0],X_embedded[:,1], c=Y_train)
@@ -73,42 +107,4 @@ ax.set_zlim((-0.025, 0.025))
 plt.legend()
 plt.show()
 
-#%% Reducción de dimensionalidad
 
-pca = PCA(0.95, svd_solver='full')
-
-X_train = pca.fit_transform(X_train, Y_train)
-
-#%% Embedd 2D
-X_embedded3 = TSNE(n_components=2).fit_transform(X_train)
-
-#%% Visualizacion 2D
-plt.scatter(X_embedded[:,0],X_embedded[:,1], c=Y_train)
-plt.legend()
-plt.show()
-
-#%% Embedd 3d
-X_embedded4 = TSNE(n_components=3).fit_transform(X_train)
-
-#%% Visualizar 3D
-fig = plt.figure()
-ax = Axes3D(fig)
-plt.scatter(X_embedded2[:,0], X_embedded2[:,1], X_embedded2[:,2], c=Y_train)
-ax.set_xlim((-20, 20))
-ax.set_ylim((-20,20))
-ax.set_zlim((-0.025, 0.025))
-plt.legend()
-plt.show()
-
-
-#%% Standarizacion
-####
-#### NORMALIZACIÓN
-####
-
-scaler = StandardScaler()
-
-#Ajusto el normalizador a mi muestra para que calcule la media y la desviación típica
-scaler.fit(X_train)
-
-X_train = scaler.transform(X_train)
