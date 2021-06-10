@@ -17,6 +17,12 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+#pipeline
+from sklearn.pipeline import make_pipeline
+
+#modelos
+from sklearn import svm
+
 def leer(archivo):
     data = np.genfromtxt(archivo, delimiter=',')
     c = data.shape[1]-1
@@ -101,17 +107,14 @@ plt.scatter(X_embedded[:,0],X_embedded[:,1], c=Y_train)
 plt.legend()
 plt.show()
 
-#%% Embedd 3d
-X_embedded2 = TSNE(n_components=3).fit_transform(X_train)
 
-#%% Visualizar 3D
-fig = plt.figure()
-ax = Axes3D(fig)
-plt.scatter(X_embedded2[:,0], X_embedded2[:,1], X_embedded2[:,2], c=Y_train)
-ax.set_xlim((-20, 20))
-ax.set_ylim((-20,20))
-ax.set_zlim((-0.025, 0.025))
-plt.legend()
-plt.show()
+#%% Linear SVC
+clf = svm.LinearSVC()
+
+#creamos el modelo
+model = make_pipeline(StandardScaler(), clf)
+
+#y entrenamos el modelo con la muestra dada
+model.fit(X_train, Y_train)
 
 
