@@ -39,7 +39,7 @@ for i in range(Y.size):
 
 #%% División de los datos
 
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.30, random_state=0)
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.20, random_state=0)
 
 #%% Correlacion entre las variables
 
@@ -81,10 +81,17 @@ media = np.mean(X_train, axis=0).mean()
 print('Varianza: ', var)
 print('Media: ', media)
 #%% Reducción de dimensionalidad
+columnas = X_train[:, 11:17]
+columnas = np.append(columnas, X_train[:, 29:36], axis=1)
+
+X_train = np.delete(X_train, [11,12,13,14,15,16,29,30,31,32,33,34,35], axis=1)
+
 
 pca = PCA(0.95, svd_solver='full')
 
 X_train = pca.fit_transform(X_train, Y_train)
+
+X_train = np.append(X_train, columnas, axis=1)
 
 #%% Embedd 2D
 X_embedded = TSNE(n_components=2).fit_transform(X_train)
