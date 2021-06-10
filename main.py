@@ -109,12 +109,10 @@ plt.show()
 
 
 #%% Linear SVC
+#creamos el modelo
 clf = svm.LinearSVC()
 
-#creamos el modelo
-model = make_pipeline(StandardScaler(), clf)
-
 #y entrenamos el modelo con la muestra dada
-model.fit(X_train, Y_train)
+clf.fit(X_train, Y_train)
 
 
