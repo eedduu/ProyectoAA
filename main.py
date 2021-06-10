@@ -16,6 +16,9 @@ from sklearn.manifold import TSNE
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import cross_validate
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import GridSearchCV
 
 #pipeline
 from sklearn.pipeline import make_pipeline
@@ -104,15 +107,23 @@ X_embedded = TSNE(n_components=2).fit_transform(X_train)
 
 #%% Visualizacion 2D
 plt.scatter(X_embedded[:,0],X_embedded[:,1], c=Y_train)
-plt.legend()
 plt.show()
+
+#%% Optimizacion de parametros
+
+#array de valores de parametros razonables para la obtencion de parametros
+param_grid = {'penalty': ['l1', 'l2'], 'loss':['hinge', 'squared_hinge'], 'dual': [False], 'C':[0.1, 0.5, 1,  5, 10, 100], 'random_state': [0] }
+modelo = GridSearchCV(svm.LinearSVC(), param_grid, scoring='roc_auc')
+modelo.fit(X_train, Y_train)
+print('Mejores parámetros del modelo Linear SVC: ', modelo.best_params_)
 
 
 #%% Linear SVC
 #creamos el modelo
-clf = svm.LinearSVC()
+clf = svm.LinearSVC(penalty='l2', C=0.5, dual=False, random_state=0)
 
 #y entrenamos el modelo con la muestra dada
-clf.fit(X_train, Y_train)
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+print('AUC  en Cross-Validation', results['test_score'].mean())
 
 
