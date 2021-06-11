@@ -124,11 +124,12 @@ El parámetro de activación es la función que tendrán las capas ocultas en ca
 
 Aquí una tabla que resume un poco lo dicho anteriormente y muestra los scores en cada caso.
 
-| Tamaño de Capas           | Parámetros  | AUC Score |
-|---------------------------|-------------|-----------|
-| [50, 50]                  | Por defecto | 0.645     |
-| [52, 55]                  | Por defecto | 0.661     |
-| [52, 55]                  | Optimizados | 0.704     |
+| Tamaño de Capas                           | Parámetros  | AUC Score |
+|-------------------------------------------|-------------|-----------|
+| [50, 50]                                  | Por defecto | 0.659     |
+| [52, 55]                                  | Por defecto | 0.661     |
+| [52, 55]                                  | Optimizados | 0.704     |
+| [100, 100] (por defecto)                  | Optimizados | 0.658     |
 
 ## Biografia
 - (LinearSVC) https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html

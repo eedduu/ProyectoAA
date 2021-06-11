@@ -169,5 +169,3 @@ clf.fit(X_train, Y_train)
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
 
 print('Perceptrón 3 capas en Cross-Validation AUC Score', results['test_score'].mean())
-
-
