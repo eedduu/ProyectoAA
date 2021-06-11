@@ -94,5 +94,18 @@ Como modelo lineal vamos a usar Linear SVC, usando la función LinearSVC del mó
 
 Para la obtención de los mejores parámetros vamos a usar la función GridSearchCV, que encuentra los mejores parámetros para un estimador, dentro de unos valores dados, probando combinaciones de esos parámetros en Cross-Validation, y nos da el mejor estimador junto con el error obtenido y los parámetros de dicho estimador. Esta función forma parte del módulo model_selection de sklearn. Los parámetros de ésta función son: el modelo del que queremos probar los parámetros, un diccionario donde estén los valores propuestos y los atributos y la métrica de evaluación con la que queremos calcular el error del modelo.
 
-### Modelo Lineal SVC
-Este modelo es similar al SVC no lineal con parametros `kernel='linear'`, pero implementado en terminos de <b>liblinear</b> en lugar de <b>libsvm</b>, por lo que segun la pagina oficial de sklearn aporta mayor flexibilidad en la elección de penalizaciones y funciones de perdida, a parte de que escala mejor con muestras de gran tamaño.
+## Modelo Lineal SVC
+Este modelo es similar al SVC no lineal con parametros `kernel='linear'`, pero implementado en terminos de **liblinear** en lugar de **libsvm**, por lo que segun la pagina oficial de sklearn aporta mayor flexibilidad en la elección de penalizaciones y funciones de perdida, a parte de que escala mejor con muestras de gran tamaño.
+
+Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cross-Validation** y comparar los resultados de dicho modelo usando los parametros por defecto y con los parametros personalizados, para medir dicho modelo usaremos la metrica **AUC**:
+
+ LinearSVC                                               | AUC |
+|--------------------------------------------------------------|
+| Parametros por defecto | Palabras   |
+| Con los parametros personalizados: | Palabras   |
+
+(NOTA: la eleccion de los parametros personalizados hemos usado **GridSearchCV** que comprueba que parametros ajusta mejor el modelo)
+
+## Biografia
+- (LinearSVC) https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html
+- 
