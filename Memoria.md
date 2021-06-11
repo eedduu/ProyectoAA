@@ -99,12 +99,12 @@ Este modelo es similar al SVC no lineal con parametros `kernel='linear'`, pero i
 
 Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cross-Validation** y comparar los resultados de dicho modelo usando los parametros por defecto y con los parametros personalizados, para medir dicho modelo usaremos la metrica **AUC**:
 
- LinearSVC                                                                              | AUC      |
-|--------------------------------------------------------------------------------------------------|
-| Parametros por defecto                                                                | 0.6972   |
+ LinearSVC                                                                | AUC      |
+|------------------------------------------------------------------------------------|
+| Parametros por defecto                                                  | 0.69721  |
 | Con los parametros personalizados: C=0.5, dual=False, random_state=0    | 0.69561  |
 
-La eleccción del parametro **dual=false** se eligio porque basandonos en las especificaciones de la pagina oficial de sklearn nos recomienda desactivar esta funcion si **el numero de muestras es > al numero de caracteristicas**. Por otro lado tambien desactivamos la funcion **random_state** ya que funciona con **dual**, segun la pagina oficial si esta activo el **dual** tambien debe estar activo **random_state**, y vicebersa.
+Haciendo pruebas cambiando los diferentes parametros no veiamos mejora alguna con respecto a los parametros por defecto, un ejemplo es la tabla de arriba, puesto que al cambiar los parametros empeoraba nuestro modelo.
 
 (NOTA: la eleccion de los parametros personalizados hemos usado **GridSearchCV** que comprueba que parametros ajusta mejor el modelo)
 

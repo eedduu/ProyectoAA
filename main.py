@@ -26,6 +26,9 @@ from sklearn.pipeline import make_pipeline
 #modelos
 from sklearn import svm
 
+#para medir el tiempo que tarda cada modelo
+from time import time
+
 def leer(archivo):
     data = np.genfromtxt(archivo, delimiter=',')
     c = data.shape[1]-1
@@ -68,6 +71,7 @@ sns.relplot()
 var = np.var(X_train, axis=0).mean() 
 media = np.mean(X_train, axis=0).mean()
 
+print("Sin ajustar los datos")
 print('Varianza: ', var)
 print('Media: ', media)
 #%% Standarizacion
@@ -86,7 +90,7 @@ X_train = scaler.transform(X_train)
 
 var = np.var(X_train, axis=0).mean() 
 media = np.mean(X_train, axis=0).mean()
-
+print("\nCon los datos ajustados")
 print('Varianza: ', var)
 print('Media: ', media)
 #%% Reducción de dimensionalidad
@@ -112,18 +116,21 @@ plt.show()
 #%% Optimizacion de parametros
 
 #array de valores de parametros razonables para la obtencion de parametros
-param_grid = {'penalty': ['l1', 'l2'], 'loss':['hinge', 'squared_hinge'], 'dual': [False], 'C':[0.1, 0.5, 1,  5, 10, 100], 'random_state': [0] }
+print("comprobando parametros a usar: ")
+print("--------------------------------------------------------------------------------------------------")
+param_grid = {'penalty': ['l1', 'l2'], 'dual': [False], 'C':[0.1, 0.5, 1,  5, 10], 'random_state': [0]}
 modelo = GridSearchCV(svm.LinearSVC(), param_grid, scoring='roc_auc')
 modelo.fit(X_train, Y_train)
-print('Mejores parámetros del modelo Linear SVC: ', modelo.best_params_)
-
+print("--------------------------------------------------------------------------------------------------")
+print('Mejores parámetros del modelo LinearSVC: ', modelo.best_params_)
 
 #%% Linear SVC
 #creamos el modelo
-clf = svm.LinearSVC(penalty='l2', C=0.5, dual=False, random_state=0)
+clf = svm.LinearSVC(C=0.5, dual=False, random_state=0)
 
 #y entrenamos el modelo con la muestra dada
+results = cross_validate(svm.LinearSVC(), X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+print('AUC  en Cross-Validation con LinearSVC (parametros por defecto)', results['test_score'].mean())
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
-print('AUC  en Cross-Validation', results['test_score'].mean())
-
+print('AUC  en Cross-Validation con LinearSVC (sin los parametros por defecto)', results['test_score'].mean())
 
