@@ -25,6 +25,7 @@ from sklearn.pipeline import make_pipeline
 
 #modelos
 from sklearn import svm
+from sklearn.neural_network import MLPClassifier
 
 #para medir el tiempo que tarda cada modelo
 from time import time
@@ -133,4 +134,40 @@ results = cross_validate(svm.LinearSVC(), X_train, Y_train, cv=5, n_jobs=-1, sco
 print('AUC  en Cross-Validation con LinearSVC (parametros por defecto)', results['test_score'].mean())
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
 print('AUC  en Cross-Validation con LinearSVC (sin los parametros por defecto)', results['test_score'].mean())
+
+#%% Optimizacion parametros NN
+param_grid = {'hidden_layer_sizes': [[50, 50], [50, 60], [50, 70], [50, 80], [50, 90], [50, 100],
+                                [60,50], [60,60], [60,70], [60,80], [60,90], [60,100], 
+                                [70, 50], [70, 60], [70, 70], [70, 80], [70, 90], [70, 100], 
+                                [80,50], [80,60], [80,70], [80,80], [80,90], [80,100], 
+                                [90,50], [90,60], [90,70], [90,80], [90,90], [90,100],
+                                [100,50], [100,60], [100,70], [100,80], [100,90], [100,100], ] }
+
+modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
+modelo.fit(X_train, Y_train)
+
+print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
+
+#Ajustamos un poco más
+param_grid = {'hidden_layer_sizes': [[50, 50], [50,55], [55,50], [52,55], [55,52], [55,55]]}
+modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
+modelo.fit(X_train, Y_train)
+
+print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
+
+param_grid= {'hidden_layer_sizes': [[52, 55]], 'activation':['logistic', 'tanh', 'relu'], 'alpha':[0.0001, 0.001, 0.01], 'learning_rate_init':[0.001, 0.01, 0.1], 'learning_rate':['constant', 'invscaling', 'adaptative']}
+modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
+modelo.fit(X_train, Y_train)
+
+print('Mejores parámetros del Perceptron de 3 capas: ', modelo.best_params_)
+
+
+#%% Multilayer perceptron
+#capas=[100, 95]  0.918707766162660
+clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', alpha=0.01, learning_rate_init=0.1  )
+clf.fit(X_train, Y_train)
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+
+print('Perceptrón 3 capas en Cross-Validation AUC Score', results['test_score'].mean())
+
 

@@ -80,7 +80,7 @@ Una vez aplicamos PCA y volvemos a unir las variables categóricas, nos quedamos
 
 Como no tenemos datos que se alejen excesivamente del conjunto de datos, no vemos necesario usar una técnica de eliminación de outliers.
 
-## Métrica a usar
+## Métrica de avaluación a usar
 Para este problema vamos a usar la métrica AUC para medir lo bien que lo hace el modelo. Está métrica nos da un valor entre 0 y 1, y dicho valor será el área bajo la curva ROC, que es la curva que dibuja una gráfica según la tasa de positivos (eje y) y la tasa de falsos positivos (eje x). Este valor entre 0 y 1 nos va a señalar la probabilidad de que, dado un dato de muestra, el modelo lo clasifique bien. Siendo 1 el 100% de probabilidad, 0.5 el peor caso con 50% de probabilidad (aleatorio) y 0 sería que manda los positivos a los negativos y viceversa.  Hemos elegido esta métrica porque nos parece la mejor, ya que expresa el error en términos relativos al problema en lugar de valores absolutos, mide la calidad de las predicciones del modelo y es invariante respecto de la escala y el umbral de clasificación del modelo.
 
 ## Elección del mejor modelo
@@ -88,11 +88,9 @@ Para seleccionar el mejor modelo vamos a usar Cross-Validation, con la intenció
 
 Calculamos el error del modelo como la media de los 5 errores obtenidos de evaluar el modelo en cross-Validation. El que mejor puntuación alcance, el más cercano a 1 ya que estamos usando AUC, será el modelo que elegiremos para entrenar con todo el conjunto de entrenamiento y luego comprobar el test.
 
-## Modelos a usar
+## Elección de hiperparámetros
 
-Como modelo lineal vamos a usar Linear SVC, usando la función LinearSVC del módulo svm de sklearn. Los otros dos modelos que vamos a usar son Random Forest y ¿¿¿¿¿Redes Neuronales?????
-
-Para la obtención de los mejores parámetros vamos a usar la función GridSearchCV, que encuentra los mejores parámetros para un estimador, dentro de unos valores dados, probando combinaciones de esos parámetros en Cross-Validation, y nos da el mejor estimador junto con el error obtenido y los parámetros de dicho estimador. Esta función forma parte del módulo model_selection de sklearn. Los parámetros de ésta función son: el modelo del que queremos probar los parámetros, un diccionario donde estén los valores propuestos y los atributos y la métrica de evaluación con la que queremos calcular el error del modelo.
+Para la obtención de los mejores parámetros vamos a usar la función GridSearchCV, que encuentra los mejores parámetros para un estimador, dentro de unos valores dados, probando combinaciones de esos parámetros en Cross-Validation (para disminuir el sobreajuste), y nos da el mejor estimador junto con el error obtenido y los parámetros de dicho estimador. Esta función forma parte del módulo model_selection de sklearn. Los parámetros de ésta función son: el modelo del que queremos probar los parámetros, un diccionario donde estén los valores propuestos y los atributos, y la métrica de evaluación con la que queremos calcular el error del modelo.
 
 ## Modelo Lineal SVC
 Este modelo es similar al SVC no lineal con parametros `kernel='linear'`, pero implementado en terminos de **liblinear** en lugar de **libsvm**, por lo que segun la pagina oficial de sklearn aporta mayor flexibilidad en la elección de penalizaciones y funciones de perdida, a parte de que escala mejor con muestras de gran tamaño.
@@ -108,6 +106,30 @@ Haciendo pruebas cambiando los diferentes parametros no veiamos mejora alguna co
 
 (NOTA: la eleccion de los parametros personalizados hemos usado **GridSearchCV** que comprueba que parametros ajusta mejor el modelo)
 
+## Perceptrón Multicapa
+Para implementar el Perceptrón multicapa hemos usado la función MLPClassifier del módulo neural_network de sklearn. Para usar la arquitectura de 3 capas debemos pasarle un array de longitud 2 con la cantidad de unidades por capa de cada capa. Así tendremos 2 capas ocultas más la capa de salida que conformarán la arquitectura de 3 capas.
+
+Para el cálculo de los parámetros hemos hecho uso de GridSearchCV, pero debido a la ingente cantidad de valores posibles y la potencia computacional que requeriría hacer todas las comprobaciones a la vez, hemos decidido ajustar primero el número de neuronas por capa y luego los demas parámetros. Para el número de neuronas por capa hemos usado pares (i,j) donde i,j son múltiplos de 10 entre 50 y 100. Hemos obtenido así que la mejor combinación de neuronas por capa en (50,50). Luego para afinar más hemos tomado pares cercanos a este, obteniendo que la mejor combinación es (52,55) neuronas.
+
+Con este parámetro fijado, hemos vuelto a usar GridSearchCV para la obtención del resto de hiperparámetros, obteniendo los siguientes:
+
+| Parámetro          | Valor    |
+|--------------------|----------|
+| Activation         | Logistic |
+| Alpha              | 0.01     |
+| learning_rate      | constant |
+| learning_rate_init | 0.1      |
+
+El parámetro de activación es la función que tendrán las capas ocultas en cada unidad, en este caso la función sigmoide. Alpha es nuestro parámetro de regularización, cuanto más grande sea más regularización tendremos, por defecto es 0.0001. El learning_rate es constante, por lo que no cambiará a lo largo del aprendizaje, y su valor es 0.1.
+
+Aquí una tabla que resume un poco lo dicho anteriormente y muestra los scores en cada caso.
+
+| Tamaño de Capas           | Parámetros  | AUC Score |
+|---------------------------|-------------|-----------|
+| [50, 50]                  | Por defecto | 0.645     |
+| [52, 55]                  | Por defecto | 0.661     |
+| [52, 55]                  | Optimizados | 0.704     |
+
 ## Biografia
 - (LinearSVC) https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html
-- 
+-
