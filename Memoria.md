@@ -100,7 +100,7 @@ Este modelo es similar al SVC no lineal con parametros `kernel='linear'`, pero i
 Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cross-Validation** y comparar los resultados de dicho modelo usando los parametros por defecto y con los parametros personalizados, para medir dicho modelo usaremos la metrica **AUC**:
 
 | LinearSVC                                                               | AUC      |
-|------------------------------------------------------------------------------------|
+|-------------------------------------------------------------------------|----------|
 | Parametros por defecto                                                  | 0.69721  |
 | Con los parametros personalizados: C=0.5, dual=False, random_state=0    | 0.69561  |
 
