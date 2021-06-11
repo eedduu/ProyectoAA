@@ -102,7 +102,9 @@ Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cros
  LinearSVC                                                                              | AUC      |
 |--------------------------------------------------------------------------------------------------|
 | Parametros por defecto                                                                | 0.6972   |
-| Con los parametros personalizados: penalty='l2', C=0.5, dual=False, random_state=0    | 0.69561  |
+| Con los parametros personalizados: C=0.5, dual=False, random_state=0    | 0.69561  |
+
+La eleccción del parametro **dual=false** se eligio porque basandonos en las especificaciones de la pagina oficial de sklearn nos recomienda desactivar esta funcion si **el numero de muestras es > al numero de caracteristicas**. Por otro lado tambien desactivamos la funcion **random_state** ya que funciona con **dual**, segun la pagina oficial si esta activo el **dual** tambien debe estar activo **random_state**, y vicebersa.
 
 (NOTA: la eleccion de los parametros personalizados hemos usado **GridSearchCV** que comprueba que parametros ajusta mejor el modelo)
 
