@@ -95,6 +95,8 @@ Para la obtención de los mejores parámetros vamos a usar la función GridSearc
 ## Modelo Lineal SVC
 Este modelo es similar al SVC no lineal con parametros `kernel='linear'`, pero implementado en terminos de **liblinear** en lugar de **libsvm**, por lo que segun la pagina oficial de sklearn aporta mayor flexibilidad en la elección de penalizaciones y funciones de perdida, a parte de que escala mejor con muestras de gran tamaño.
 
+Para aplicar este modelo hemos usado la libreria **sklearn.svm** y en ella usamos la funcion **LinearSVC()**.
+
 Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cross-Validation** y comparar los resultados de dicho modelo usando los parametros por defecto y con los parametros personalizados, para medir dicho modelo usaremos la metrica **AUC**:
 
 | LinearSVC                                                               | AUC      |
@@ -130,6 +132,20 @@ Aquí una tabla que resume un poco lo dicho anteriormente y muestra los scores e
 | [52, 55]                                  | Por defecto | 0.661     |
 | [52, 55]                                  | Optimizados | 0.704     |
 | [100, 100] (por defecto)                  | Optimizados | 0.658     |
+
+## Random Forest
+Este algoritmo esta construido sobre la idea de bagging, aportando mejoras. Ademas es un algoritmo flexible y sencillo de usar para clasificar y derivar funciones en función del numero de arboles de decisión. 
+Con lo cual es un conjunto de arboles de decisión individuales que operan como un conjunto. De tal forma que cada arbol devuelve una predicción de clase y se queda con la clase con mayor votos, convirtiendola en el modelo de predicción preferido.
+
+Algunas de las ventajas de usar este algoritmo son las siguientes:
+- Permite manejar los valores faltantes y mantener la precisión de los datos faltantes.
+- Maneja grandes conjuntos de datos con mayor dimensionalidad.
+- Y no se adaptará al modelo.
+
+Pero una de las desventajas de usar este algoritmo es que tiene muy poco control sobre lo que hacen los modelos.
+
+Para aplicarlo hemos usado la libreria **sklearn.ensemble** y en ella usamos la funcion **RandomForestClassifier**.
+
 
 ## Biografia
 - (LinearSVC) https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html
