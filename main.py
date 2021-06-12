@@ -176,16 +176,16 @@ results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_au
 print('Perceptrón 3 capas en Cross-Validation AUC Score', results['test_score'].mean())
 
 #%% RandomForest
-start_time = time()
-print("--------------------------------------------------------------------------------------------------")
-param_grid = {'n_estimators': [150, 500, 1000], 'criterion': ['gini', 'entropy'], 'max_depth': [2, 4, None], 'min_samples_split': [2, 4, 8], 'max_features': ['sqrt', 'log2']}
-modelo = GridSearchCV(RandomForestClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
-modelo.fit(X_train, Y_train)
-print("--------------------------------------------------------------------------------------------------")
-elapsed_time = time() - start_time
-print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
+# start_time = time()
+# print("--------------------------------------------------------------------------------------------------")
+# param_grid = {'n_estimators': [150, 500, 1000], 'criterion': ['gini', 'entropy'], 'max_depth': [2, 4, None], 'min_samples_split': [2, 4, 8], 'max_features': ['sqrt', 'log2']}
+# modelo = GridSearchCV(RandomForestClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
+# modelo.fit(X_train, Y_train)
+# print("--------------------------------------------------------------------------------------------------")
+# elapsed_time = time() - start_time
+# print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
 
-print('Mejores parámetros del Random Forest: ', modelo.best_params_)
+# print('Mejores parámetros del Random Forest: ', modelo.best_params_)
 
 clf = RandomForestClassifier()
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
