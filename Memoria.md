@@ -59,15 +59,17 @@ Para visualizar los datos usamos la función TSNE del módulo manifold de sklear
 
 ![Visualización del conjunto de datos en 2D](img/visualizacion2d.png)
 
+## Codificación de los datos
+
+No tenemos datos faltantes (lo pone en la página del paper) ni clases desbalanceadas ya que tenemos 18490 muestras de la clase 0 y 21154 de la clase 1. Además, las variables categóricas vienen ya codificadas en el dataset con one-hot encoding. Por tanto no necesitamos hacer codificación de nuestros datos de entrada.
+
 ## Separación de los datos
 En este problema tenemos un único archivo por lo que tenemos juntos los datos de training y los de test. Para separarlos usamos la función train_test_split del módulo model_selection de sklearn. A esta función le pasamos el conjunto de datos y el de etiqutas junto al porcentaje que queremos que represente el test. Hemos elegido un 20% de datos para el conjunto de test ya que es una recomendación que se dio en clase de prácticas. La función divide en la proporción seleccionada el conjunto de datos cogiendo muestras aleatorias, y devuelve 4 conjuntos, los dos de training y los dos de test. Usamos el parámetro random_state=0 para que siempre se use la misma semilla aleatoria a la hora de dividir los datos y poder obtener asi resultados reproducibles.
 
 ## Preprocesado de los datos
 
-No tenemos datos faltantes ni clases desbalanceadas. Además, las variables categóricas vienen ya codificadas con one-hot encoding.
-
 ### Estandarización
-Calculamos la varianza y la media de nuestro conjunto de entrenamiento como la media de la media y la varianza de cada atributo. Obtenemos una varianza de 1210949639.72 y una media de 18237.71. Estos son valores muy altos por lo que la estandarización aquí se nos hace prácticamente obligatoria. Usamos la función StandardScaler() del módulo preprocessing de sklearn, que nos hace una estandarización de los datos, es decir, resta la media y divide por la desviación típica. Después de aplicar estandarizado la varianza es 1 y la media es 0 (aprox).
+Calculamos la varianza y la media de nuestro conjunto de entrenamiento como la media de la media y la varianza de cada atributo. Obtenemos una varianza de 1210949639.72 y una media de 18237.71. Estos son valores muy altos por lo que la estandarización aquí se nos hace prácticamente obligatoria. Usamos la función StandardScaler() del módulo preprocessing de sklearn, que nos hace una estandarización de los datos, es decir, resta la media y divide por la desviación típica. Después de aplicar estandarizado la varianza es 1 y la media es 0 (aprox). Usamos estandarización ya que es una técnica de normalización sencilla y efectiva.
 
 ### Reducción de dimensionalidad
 Aunque no haya una correlación alarmante entre las variables, hemos decidido aplicar un algoritmo de reducción de dimensionalidad para simplificar el conjunto de datos y agilizar así la tarea de aprendizaje. Como tenemos variables tanto numéricas como categóricas, vamos a separar primero las carácteristicas categóricas para aplicar PCA a las numéricas, y luego volveremos a unirlas. Hemos optado por esta opción por simpleza y porque ya conocemos PCA, antes que otras opciones como por ejemplo usar un método de reducción de dimensionalidad para datos mixtos como Factor analysis of mixed data (FAMD) o Multiple factor analysis (MFA), ya que desconocemos su funcionamiento y no están implementadas en sklearn, por lo que tendríamos que hacer la implementación propia.
@@ -91,6 +93,21 @@ Calculamos el error del modelo como la media de los 5 errores obtenidos de evalu
 ## Elección de hiperparámetros
 
 Para la obtención de los mejores parámetros vamos a usar la función GridSearchCV, que encuentra los mejores parámetros para un estimador, dentro de unos valores dados, probando combinaciones de esos parámetros en Cross-Validation (para disminuir el sobreajuste), y nos da el mejor estimador junto con el error obtenido y los parámetros de dicho estimador. Esta función forma parte del módulo model_selection de sklearn. Los parámetros de ésta función son: el modelo del que queremos probar los parámetros, un diccionario donde estén los valores propuestos y los atributos, y la métrica de evaluación con la que queremos calcular el error del modelo.
+
+
+## Modelos seleccionados
+Para abordar el problema hemos seleccionado como modelo lineal una SVM de clasificación con kernel lineal y como modelos no lineales Random Forest y Perceptrón Multicapa de 3 capas.
+
+Hemos elegido SVM ya que nos parece la solución linear que más nos puede aportar. SVC tiende a sobreajustar los datos de entrenamiento en menor medida que otros modelos como Regresión Lineal. Además SVC busca linealidad en dimensiones superiores a la de partida, por lo que puede encontrar una separación lineal en conjuntos de datos donde el Perceptrón o la Regresión Lineal no lo harían.
+
+En el Perceptrón Multicapa tenemos que es un modelo muy potente capaz de aproximar funciones objetivo muy complejas, por lo que teniendo en cuenta el conjunto de datos creemos que puede ser una buena solución.
+
+Una de las ventajas de usar Random Forest es que maneja grandes conjuntos de datos con mayor dimensionalidad.
+
+## Regularización usada
+Hemos usado regularización tanto en el SVM como en el Perceptrón multicapa. La hemos usado en estos dos modelos ya que son mucho más susceptibles de sobreajustarse a los datos de entrenamiento que random forest, en especial el perceptrón multicapa. Para Random Forest, también necesitamos usar regularización ya que el modelo tiende a sobreajustar, pero la función de sklearn que usamos nos proporciona una regularización que no se basa en L2 ni L1, sino que viene dada en base a cuatro parámetros: máxima profundidad del árbol, número mínimo de muestras necesarias para dividir un nodo, número mínimo de muestras que debe haber en un nodo hoja y número máximo de nodos finales.
+
+Usamos la regularización L2 (Ridge) en SVC y Perceptrón multicapa ya que es la que mejor se adapta a nuestro problema. Si usaramos regularización L1 entonces los pesos de algunas de nuestras variables serían cero, cosa que no nos interesa en absoluto ya que hemos aplicado previamente PCA por lo que ya tenemos variables reducidas.
 
 ## Modelo Lineal SVC
 Este modelo es similar al SVC no lineal con parametros `kernel='linear'`, pero implementado en terminos de **liblinear** en lugar de **libsvm**, por lo que segun la pagina oficial de sklearn aporta mayor flexibilidad en la elección de penalizaciones y funciones de perdida, a parte de que escala mejor con muestras de gran tamaño.
@@ -131,22 +148,25 @@ Aquí una tabla que resume un poco lo dicho anteriormente y muestra los scores e
 | [50, 50]                                  | Por defecto | 0.659     |
 | [52, 55]                                  | Por defecto | 0.661     |
 | [52, 55]                                  | Optimizados | 0.704     |
-| [100, 100] (por defecto)                  | Optimizados | 0.658     |
+| [100, 100] (por defecto)                  | Por defecto | 0.658     |
 
 ## Random Forest
-Este algoritmo esta construido sobre la idea de bagging, aportando mejoras. Ademas es un algoritmo flexible y sencillo de usar para clasificar y derivar funciones en función del numero de arboles de decisión. 
+Este algoritmo esta construido sobre la idea de bagging, aportando mejoras. Ademas es un algoritmo flexible y sencillo de usar para clasificar y derivar funciones en función del numero de arboles de decisión.
 Con lo cual es un conjunto de arboles de decisión individuales que operan como un conjunto. De tal forma que cada arbol devuelve una predicción de clase y se queda con la clase con mayor votos, convirtiendola en el modelo de predicción preferido.
 
-Algunas de las ventajas de usar este algoritmo son las siguientes:
-- Permite manejar los valores faltantes y mantener la precisión de los datos faltantes.
-- Maneja grandes conjuntos de datos con mayor dimensionalidad.
-- Y no se adaptará al modelo.
 
-Pero una de las desventajas de usar este algoritmo es que tiene muy poco control sobre lo que hacen los modelos.
 
 Para aplicarlo hemos usado la libreria **sklearn.ensemble** y en ella usamos la funcion **RandomForestClassifier**.
 
-
+##TODO
+- Discutir idoniedad de los modelos para el problema
+- Clases de funciones a usar?
+- Explicar todos los parámetros de los modelos
+- Evaluación y comparación de modelos entrenados
+- Gráficas para comparación de error
+- Explicar elección del mejor modelo
+- Entrenar el mejor modelo (sin cross validation) y evaluarlo con test
+- Explicar resultados obtenidos en el test, con graficas y tal
 ## Biografia
 - (LinearSVC) https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html
--
+- (Random Forest) https://www.iartificial.net/random-forest-bosque-aleatorio/#Random_Forest_en_scikit-learn_hiper-parametros_mas_utiles
