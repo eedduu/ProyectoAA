@@ -26,6 +26,7 @@ from sklearn.pipeline import make_pipeline
 #modelos
 from sklearn import svm
 from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 #para medir el tiempo que tarda cada modelo
 from time import time
@@ -136,6 +137,7 @@ results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_au
 print('AUC  en Cross-Validation con LinearSVC (sin los parametros por defecto)', results['test_score'].mean())
 
 #%% Optimizacion parametros NN
+print("--------------------------------------------------------------------------------------------------1")
 param_grid = {'hidden_layer_sizes': [[50, 50], [50, 60], [50, 70], [50, 80], [50, 90], [50, 100],
                                 [60,50], [60,60], [60,70], [60,80], [60,90], [60,100], 
                                 [70, 50], [70, 60], [70, 70], [70, 80], [70, 90], [70, 100], 
@@ -145,19 +147,22 @@ param_grid = {'hidden_layer_sizes': [[50, 50], [50, 60], [50, 70], [50, 80], [50
 
 modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
 modelo.fit(X_train, Y_train)
+print("--------------------------------------------------------------------------------------------------")
 
 print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
 
 #Ajustamos un poco más
+print("--------------------------------------------------------------------------------------------------")
 param_grid = {'hidden_layer_sizes': [[50, 50], [50,55], [55,50], [52,55], [55,52], [55,55]]}
 modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
 modelo.fit(X_train, Y_train)
-
+print("--------------------------------------------------------------------------------------------------")
 print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
-
+print("--------------------------------------------------------------------------------------------------")
 param_grid= {'hidden_layer_sizes': [[52, 55]], 'activation':['logistic', 'tanh', 'relu'], 'alpha':[0.0001, 0.001, 0.01], 'learning_rate_init':[0.001, 0.01, 0.1], 'learning_rate':['constant', 'invscaling', 'adaptative']}
 modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
 modelo.fit(X_train, Y_train)
+print("--------------------------------------------------------------------------------------------------")
 
 print('Mejores parámetros del Perceptron de 3 capas: ', modelo.best_params_)
 
@@ -169,3 +174,26 @@ clf.fit(X_train, Y_train)
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
 
 print('Perceptrón 3 capas en Cross-Validation AUC Score', results['test_score'].mean())
+
+#%% RandomForest
+start_time = time()
+print("--------------------------------------------------------------------------------------------------")
+param_grid = {'n_estimators': [150, 500, 1000], 'criterion': ['gini', 'entropy'], 'max_depth': [2, 4, None], 'min_samples_split': [2, 4, 8], 'max_features': ['sqrt', 'log2']}
+modelo = GridSearchCV(RandomForestClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
+modelo.fit(X_train, Y_train)
+print("--------------------------------------------------------------------------------------------------")
+elapsed_time = time() - start_time
+print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
+
+print('Mejores parámetros del Random Forest: ', modelo.best_params_)
+
+clf = RandomForestClassifier()
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+print('Random Forest (parametros por defecto) en Cross-Validation AUC Score', results['test_score'].mean())
+
+start_time = time()
+clf = RandomForestClassifier(n_estimators=1000, criterion='entropy', min_samples_split=8, min_samples_leaf=2)
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+elapsed_time = time() - start_time
+print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
+print('Random Forest (parametros modificados) en Cross-Validation AUC Score', results['test_score'].mean())
