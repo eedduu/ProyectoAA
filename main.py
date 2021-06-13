@@ -178,7 +178,7 @@ print('Perceptrón 3 capas en Cross-Validation AUC Score', results['test_score']
 #%% RandomForest
 # start_time = time()
 # print("--------------------------------------------------------------------------------------------------")
-# param_grid = {'n_estimators': [150, 500, 1000], 'criterion': ['gini', 'entropy'], 'max_depth': [2, 4, None], 'min_samples_split': [2, 4, 8], 'max_features': ['sqrt', 'log2']}
+# param_grid = {'n_estimators': [150, 500, 800], 'criterion': ['gini', 'entropy'], 'max_depth': [2, 4, None], 'min_samples_split': [2, 4, 8], 'max_features': ['sqrt', 'log2']}
 # modelo = GridSearchCV(RandomForestClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
 # modelo.fit(X_train, Y_train)
 # print("--------------------------------------------------------------------------------------------------")
