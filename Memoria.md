@@ -158,6 +158,17 @@ Con lo cual es un conjunto de arboles de decisión individuales que operan como 
 
 Para aplicarlo hemos usado la libreria **sklearn.ensemble** y en ella usamos la funcion **RandomForestClassifier**.
 
+Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cross-Validation** y comparar los resultados de dicho modelo usando los parametros por defecto y con los parametros personalizados, para medir dicho modelo usaremos la metrica **AUC**:
+
+| LinearSVC                                                                                              | AUC      |
+|--------------------------------------------------------------------------------------------------------|----------|
+| Parametros por defecto                                                                                 | 0.69721  |
+| Con los parametros: n_estimators=1000, criterion='entropy', min_samples_split=8, min_samples_leaf=2    | 0.69561  |
+
+Se han modificado esos parametros porque mejoraba un poco más los resultados, ampliando el numero de arboles que va a generar a 1000, cambiando la funcion que medira la calidad de una division la por **defecto (gini)**, por la de **entropy**, tambien cambiamo el numero minimo de muestras necesarias antes de dividir el nodo, que por defecto es 2 y lo ampliamos al doble y le indicamos el numero minimo de muestras que debe haber en un nodo final o nodo hoja, que por defecto es 1, pero ampliando a 8 obtenemos un mejor resultado.
+De esos parametros solo el min_samples_split y min_samples_leaf son parametros regularizables de random forest.
+
+
 ##TODO
 - Discutir idoniedad de los modelos para el problema
 - Clases de funciones a usar?
