@@ -154,22 +154,30 @@ Aquí una tabla que resume un poco lo dicho anteriormente y muestra los scores e
 Este algoritmo esta construido sobre la idea de bagging, aportando mejoras. Ademas es un algoritmo flexible y sencillo de usar para clasificar y derivar funciones en función del numero de arboles de decisión.
 Con lo cual es un conjunto de arboles de decisión individuales que operan como un conjunto. De tal forma que cada arbol devuelve una predicción de clase y se queda con la clase con mayor votos, convirtiendola en el modelo de predicción preferido.
 
-
-
 Para aplicarlo hemos usado la libreria **sklearn.ensemble** y en ella usamos la funcion **RandomForestClassifier**.
 
 Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cross-Validation** y comparar los resultados de dicho modelo usando los parametros por defecto y con los parametros personalizados, para medir dicho modelo usaremos la metrica **AUC**:
 
-| LinearSVC                                                                                              | AUC      |
+| Random Forest                                                                                              | AUC      |
 |--------------------------------------------------------------------------------------------------------|----------|
 | Parametros por defecto                                                                                 | 0.70188  |
-| Con los parametros: n_estimators=800, criterion='entropy', min_samples_split=8, min_samples_leaf=2    | 0.71187  |
+| Con los parametros: n_estimators=800, criterion='entropy', min_samples_split=8, min_samples_leaf=2     | 0.71187  |
 
 Se han modificado esos parametros porque mejoraba un poco más los resultados, ampliando el numero de arboles que va a generar a 800, cambiando la funcion que medira la calidad de una division la por **defecto (gini)**, por la de **entropy**, tambien cambiamos el numero minimo de muestras necesarias antes de dividir el nodo, que por defecto es 2 y lo ampliamos al doble y le indicamos el numero minimo de muestras que debe haber en un nodo final o nodo hoja, que por defecto es 1, pero ampliando a 8 obtenemos un mejor resultado.
 De esos parametros solo el min_samples_split y min_samples_leaf son parametros regularizables de random forest.
 
 (NOTA: la eleccion de los parametros personalizados hemos usado **GridSearchCV** que comprueba que parametros ajusta mejor el modelo)
 
+## Modelo a usar
+
+| algoritmos          | Resultados |
+|---------------------|------------|
+| Linear SVC          | 0.69721    |
+| Perceptron 3 capas  | 0.70469    |
+| Random Forest       | 0.71187    |
+
+Comparando los resultados usando **Cross Validation** de los diferentes algoritmos el modelo que más se ajusta, por lo que se puede ver en la tabla es **Random Forest**, ya que da un buen resultado.
+Por otro lado es uno de los metodos más populares en el Machine Learning, ya que se aproxima más a cumplir con los requisitos del objetivo.
 
 ##TODO
 - Discutir idoniedad de los modelos para el problema
