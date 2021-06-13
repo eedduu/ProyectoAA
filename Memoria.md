@@ -116,10 +116,10 @@ Para aplicar este modelo hemos usado la libreria **sklearn.svm** y en ella usamo
 
 Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cross-Validation** y comparar los resultados de dicho modelo usando los parametros por defecto y con los parametros personalizados, para medir dicho modelo usaremos la metrica **AUC**:
 
-| LinearSVC                                                               | AUC      |
-|-------------------------------------------------------------------------|----------|
-| Parametros por defecto                                                  | 0.69721  |
-| Con los parametros personalizados: C=0.5, dual=False, random_state=0    | 0.69561  |
+| LinearSVC                                                | AUC      |
+|----------------------------------------------------------|----------|
+| Parametros por defecto                                   | 0.69721  |
+| Con los parametros: C=0.5, dual=False, random_state=0    | 0.69561  |
 
 Haciendo pruebas cambiando los diferentes parametros no veiamos mejora alguna con respecto a los parametros por defecto, un ejemplo es la tabla de arriba, puesto que al cambiar los parametros empeoraba nuestro modelo.
 
