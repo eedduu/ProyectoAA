@@ -96,7 +96,9 @@ Para la obtención de los mejores parámetros vamos a usar la función GridSearc
 
 
 ## Modelos seleccionados
-Para abordar el problema hemos seleccionado como modelo lineal una SVM de clasificación con kernel lineal y como modelos no lineales Random Forest y Perceptrón Multicapa de 3 capas.
+Para abordar el problema hemos seleccionado como modelo lineal una **SVM** de clasificación con kernel lineal y como modelos no lineales **Random Forest** y **Perceptrón Multicapa** de 3 capas.
+
+Para resolver el problema usaremos la clase de las funciones lineales en el caso de la SVM lineal. En el caso de Perceptrón multicapa y RandomForest, debido a las características de los algoritmos de aprendizaje, desconocemos las funciones que usarán, pero previsiblemente no serán lineales.
 
 Hemos elegido SVM ya que nos parece la solución linear que más nos puede aportar. SVC tiende a sobreajustar los datos de entrenamiento en menor medida que otros modelos como Regresión Lineal. Además SVC busca linealidad en dimensiones superiores a la de partida, por lo que puede encontrar una separación lineal en conjuntos de datos donde el Perceptrón o la Regresión Lineal no lo harían.
 
