@@ -192,7 +192,7 @@ results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_au
 print('Random Forest (parametros por defecto) en Cross-Validation AUC Score', results['test_score'].mean())
 
 start_time = time()
-clf = RandomForestClassifier(n_estimators=1000, criterion='entropy', min_samples_split=8, min_samples_leaf=2)
+clf = RandomForestClassifier(n_estimators=800, criterion='entropy', min_samples_split=8, min_samples_leaf=2)
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
 elapsed_time = time() - start_time
 print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
