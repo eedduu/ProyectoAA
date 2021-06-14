@@ -280,16 +280,6 @@ print('AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
 print('Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
 input("\n--- Pulsar tecla para continuar ---\n")
 
-clf = RandomForestClassifier(n_jobs=-1, random_state=0)
-clf.fit(X_train, Y_train)
-print('Defecto AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
-print('Defecto Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
-input("\n--- Pulsar tecla para continuar ---\n")
-
-print('Defecto AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
-print('Defecto Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
-input("\n--- Pulsar tecla para continuar ---\n")
-
 list_ein.append(roc_auc_score(Y_train, clf.predict(X_train)))
 list_etest.append(roc_auc_score(Y_test, clf.predict(X_test)))
 
@@ -346,7 +336,7 @@ print('Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
 input("\n--- Pulsar tecla para continuar ---\n")
 
 #%% Grafica Ein y Etest
-nombres = ['Dummy', 'RandomForest Default','RandomForest Sin Regularización']
+nombres = ['Dummy', 'RandomForest Con Regularización','RandomForest Sin Regularización']
 x = np.arange(len(nombres))
 width = 0.35
 
