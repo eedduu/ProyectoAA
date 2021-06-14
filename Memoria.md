@@ -47,7 +47,7 @@ Tenemos un problema de clasificación binaria con un dataset en el que nos propo
 
 - **f**: nuestra función objetivo es aquella que dada un vector $x \in X$ nos da un valor un valor (booleano) $y, y \in Y, Y=\{0,1\}$
 
-El problema por tanto se podría haber resuelto también usando regresión para predecir el número de shares de una noticia, y convirtiendo ese share en 0 o 1 según el umbral que hemos visto. Hemos preferido hacerlo a través de clasificación binaria ya que supone un planteamiento más sencillo y podemos gestionar mejor los datos predichos que estén muy cerca del umbral.
+El problema por tanto se podría haber resuelto también usando regresión para predecir el número de shares de una noticia, y convirtiendo ese share en 0 o 1 según el umbral que hemos visto. Hemos preferido hacerlo a través de clasificación binaria ya que supone un planteamiento más sencillo y podemos gestionar mejor los datos predichos que estén muy cerca del umbral. Además, es el enfoque utilizado en los papers que tratan este dataset.
 
 ### Correlación de los datos
 Para ver si las variables están relacionadas entre sí vamos a calcular la matriz de coeficientes de correlación de Pearson usando la función `corr()` de los dataframes de Pandas. Luego representamos esa matriz con la función heatmap() del módulo seaborn. Como vemos en la imagen (Figura 1) no hay una correlación excesiva entre las variables, ya que los coeficientes son cercanos a cero en la mayoría de los casos.
@@ -55,7 +55,7 @@ Para ver si las variables están relacionadas entre sí vamos a calcular la matr
 ![Correlación entre las variables del problema (coef Pearson)](img/Correlation.png)
 
 ### Visualización de los datos
-Para visualizar los datos usamos la función TSNE del módulo manifold de sklearn. Esta función nos permite reducir la dimensionalidad de nuestro conjunto de datos de altas dimensiones a una cantidad de dimensiones que sea representable gráficamente. Con el parámetro n_components indicamos el número de dimensiones al que queremos reducir nuestro conjunto. Como vemos tenemos una nube de puntos compacta y que no tiene valores extremos. Además vemos que los datos no son separables en principio.
+Para visualizar los datos usamos la función TSNE del módulo manifold de sklearn. Esta función nos permite reducir la dimensionalidad de nuestro conjunto de datos de altas dimensiones a una cantidad de dimensiones que sea representable gráficamente. Con el parámetro n_components indicamos el número de dimensiones al que queremos reducir nuestro conjunto. Como vemos tenemos una nube de puntos compacta y que no tiene valores extremos. Además vemos que los datos de ambas clases están muy juntos, y en principio será difícil separarlos.
 
 ![Visualización del conjunto de datos en 2D](img/visualizacion2d.png)
 
@@ -85,6 +85,8 @@ Como no tenemos datos que se alejen excesivamente del conjunto de datos, no vemo
 ## Métrica de avaluación a usar
 Para este problema vamos a usar la métrica AUC para medir lo bien que lo hace el modelo. Está métrica nos da un valor entre 0 y 1, y dicho valor será el área bajo la curva ROC, que es la curva que dibuja una gráfica según la tasa de positivos (eje y) y la tasa de falsos positivos (eje x). Este valor entre 0 y 1 nos va a señalar la probabilidad de que, dado un dato de muestra, el modelo lo clasifique bien. Siendo 1 el 100% de probabilidad, 0.5 el peor caso con 50% de probabilidad (aleatorio) y 0 sería que manda los positivos a los negativos y viceversa.  Hemos elegido esta métrica porque nos parece la mejor, ya que expresa el error en términos relativos al problema en lugar de valores absolutos, mide la calidad de las predicciones del modelo y es invariante respecto de la escala y el umbral de clasificación del modelo.
 
+Aunque AUC va a ser nuestra métrica de referencia, también vamos a usar Accuracy. Accuracy nos dice el porcentaje de veces que nuestro modelo acierta al clasificar. En nuestro caso es una medida representativa ya que las clases se encuentran balanceadas, y si no estuvieran balanceadas no podríamos usarla. Aún así, esta métrica será solo un complemento, y la métrica discriminatoria que usaremos para elegir el modelo será AUC. Al igual que AUC, en Accuracy un 1.0 representa una clasificación perfecta mientras que un 0.5 representa un clasificador aleatorio.  
+
 ## Elección del mejor modelo
 Para seleccionar el mejor modelo vamos a usar Cross-Validation, con la intención de evitar el sobreajuste de nuestro modelo al conjunto de datos de entrenamiento. Para hacer esto usamos la función cross-validate del módulo model_selection de sklearn. Los parámetros más importantes son el estimador (modelo) que queremos entrenar, el conjunto de datos y el de etiquetas, el número de folds que queremos realizar, n_jobs=-1 para usar todos los procesadores y scoring para usar nuestra métrica de evaluación del modelo. La función realiza una división en k folds (en nuestro caso 5) del conjunto de entrenamiento, realizando k iteraciones (por lo que tenemos 5 scores) donde k-1 particiones se usan para entrenar al modelo y la otra partición se usa para evaluar el modelo, esta última iteración cambia en cada iteración. La función nos devuelve los tiempos de entrenamiento y evaluación y el error de las k (5) evaluaciones.
 
@@ -92,7 +94,7 @@ Calculamos el error del modelo como la media de los 5 errores obtenidos de evalu
 
 ## Elección de hiperparámetros
 
-Para la obtención de los mejores parámetros vamos a usar la función GridSearchCV, que encuentra los mejores parámetros para un estimador, dentro de unos valores dados, probando combinaciones de esos parámetros en Cross-Validation (para disminuir el sobreajuste), y nos da el mejor estimador junto con el error obtenido y los parámetros de dicho estimador. Esta función forma parte del módulo model_selection de sklearn. Los parámetros de ésta función son: el modelo del que queremos probar los parámetros, un diccionario donde estén los valores propuestos y los atributos, y la métrica de evaluación con la que queremos calcular el error del modelo.
+Para la obtención de los mejores parámetros vamos a usar la función GridSearchCV, que encuentra los mejores parámetros para un estimador, dentro de unos valores dados, probando combinaciones de esos parámetros en Cross-Validation (para disminuir el sobreajuste), y nos da el mejor estimador junto con el mejor error obtenido y los parámetros de dicho estimador. Esta función forma parte del módulo model_selection de sklearn. Los parámetros de ésta función son: el modelo del que queremos probar los parámetros, un diccionario donde estén los valores propuestos y los atributos, y la métrica de evaluación con la que queremos calcular el error del modelo. Esta función la hemos usado para estimar los parámetros que no eran de regularización.
 
 
 ## Modelos seleccionados
@@ -107,9 +109,16 @@ En el Perceptrón Multicapa tenemos que es un modelo muy potente capaz de aproxi
 Una de las ventajas de usar Random Forest es que maneja grandes conjuntos de datos con mayor dimensionalidad.
 
 ## Regularización usada
-Hemos usado regularización tanto en el SVM como en el Perceptrón multicapa. La hemos usado en estos dos modelos ya que son mucho más susceptibles de sobreajustarse a los datos de entrenamiento que random forest, en especial el perceptrón multicapa. Para Random Forest, también necesitamos usar regularización ya que el modelo tiende a sobreajustar, pero la función de sklearn que usamos nos proporciona una regularización que no se basa en L2 ni L1, sino que viene dada en base a cuatro parámetros: máxima profundidad del árbol, número mínimo de muestras necesarias para dividir un nodo, número mínimo de muestras que debe haber en un nodo hoja y número máximo de nodos finales.
+Hemos visto necesario usar una alta regularización en los modelos, ya que los modelos no lineales que usamos son muy propensos a sobreajustarse a los datos. Además, el conjunto de datos que tenemos no es facilmente separable y requerirá de una función compleja, por lo que un buen rendimiento del modelo en el entrenamiento se puede confundir facilmente con un sobreajuste del modelo a los datos. Además, fijandonos en los valores de predicción obtenidos en varios modelos de los papers que tratan este dataset, hemos visto que los resultados de nuestros modelos con poca o ninguna regularización eran, como poco, muy optimistas, por lo que podíamos intuir un sobreajuste a los datos de entrenamiento. De esta manera, hemos decidido sacrificar un poco de error Ein para que nuestras hipótesis no sufran de sobreajuste. De esta manera hemos calculado el error de nuestros modelos sin regularización (o regularización por defecto) para luego ir aumentando la fuerza de la regularización poco a poco hasta obtener un modelo menos sobreajustado, sacrificando aproximadamente 5 puntos en la métrica de clasificación de cada modelo. 
 
-Usamos la regularización L2 (Ridge) en SVC y Perceptrón multicapa ya que es la que mejor se adapta a nuestro problema. Si usaramos regularización L1 entonces los pesos de algunas de nuestras variables serían cero, cosa que no nos interesa en absoluto ya que hemos aplicado previamente PCA por lo que ya tenemos variables reducidas.
+
+Usamos la regularización L2 (Ridge) en SVC y Perceptrón multicapa ya que es la que mejor se adapta a nuestro problema. Si usaramos regularización L1 entonces los pesos de algunas de nuestras variables serían cero, cosa que no nos interesa en absoluto ya que hemos aplicado previamente PCA por lo que ya tenemos variables reducidas. En el Perceptrón multicapa, el parámetro de regularización es alpha, y cuanto mayor es este valor, mayor será la regularización del modelo. En LinearSVC el parámetro de regularización es C, que es inversamente proporcional a la fuerza de la regularización.
+
+Para Random Forest, la regularización no se basa en L1 o L2, sino que tenemos cuatro parámetros que van a controlar esto: máxima profundidad del árbol, número mínimo de muestras necesarias para dividir un nodo, número mínimo de muestras que debe haber en un nodo hoja y número máximo de nodos finales. Estos parámetros toman valores numéricos, y conforme vamos aumentando los valores de los parámetros minimos y vamos disminuyendo los de los parámetros máximos, irá aumentando la regularización de nuestro modelo.
+
+
+
+
 
 ## Modelo Lineal SVC
 Este modelo es similar al SVC no lineal con parametros `kernel='linear'`, pero implementado en terminos de **liblinear** en lugar de **libsvm**, por lo que segun la pagina oficial de sklearn aporta mayor flexibilidad en la elección de penalizaciones y funciones de perdida, a parte de que escala mejor con muestras de gran tamaño.
