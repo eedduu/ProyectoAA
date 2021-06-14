@@ -18,6 +18,7 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score
 from sklearn.model_selection import GridSearchCV
 
 #pipeline
@@ -27,6 +28,9 @@ from sklearn.pipeline import make_pipeline
 from sklearn import svm
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
+
+#Dummy model para comparar
+from sklearn.dummy import DummyClassifier
 
 #para medir el tiempo que tarda cada modelo
 from time import time
@@ -168,7 +172,6 @@ print('Mejores parámetros del Perceptron de 3 capas: ', modelo.best_params_)
 
 
 #%% Multilayer perceptron
-#capas=[100, 95]  0.918707766162660
 clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', alpha=0.01, learning_rate_init=0.1  )
 clf.fit(X_train, Y_train)
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
@@ -178,7 +181,7 @@ print('Perceptrón 3 capas en Cross-Validation AUC Score', results['test_score']
 #%% RandomForest
 # start_time = time()
 # print("--------------------------------------------------------------------------------------------------")
-# param_grid = {'n_estimators': [150, 500, 800], 'criterion': ['gini', 'entropy'], 'max_depth': [2, 4, None], 'min_samples_split': [2, 4, 8], 'max_features': ['sqrt', 'log2']}
+# param_grid = {'n_estimators': [150, 500], 'criterion': ['gini', 'entropy'], 'max_depth': [2, 4, None], 'min_samples_split': [2, 4, 8], 'max_features': ['sqrt', 'log2']}
 # modelo = GridSearchCV(RandomForestClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
 # modelo.fit(X_train, Y_train)
 # print("--------------------------------------------------------------------------------------------------")
@@ -197,3 +200,75 @@ results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_au
 elapsed_time = time() - start_time
 print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
 print('Random Forest (parametros modificados) en Cross-Validation AUC Score', results['test_score'].mean())
+
+
+#%% SVM no lineal
+clf = svm.SVC(kernel='poly', degree=9)
+clf.fit(X_train, Y_train)
+
+
+#%% Preparo datos test
+
+
+scaler.fit_transform(X_test)
+
+columnas = X_test[:, 11:17]
+columnas = np.append(columnas, X_test[:, 29:36], axis=1)
+
+X_test = np.delete(X_test, [11,12,13,14,15,16,29,30,31,32,33,34,35], axis=1)
+
+pca = PCA(28)
+
+X_test = pca.fit_transform(X_test)
+
+X_test = np.append(X_test, columnas, axis=1)
+
+
+#%% Calculo Ein y Eout LinealSVC
+
+clf = svm.LinearSVC(random_state=0)
+clf.fit(X_train, Y_train)
+print('AUC score linealSVC train', roc_auc_score(Y_train, clf.predict(X_train)))
+print('Accuracy score linealSVC train', accuracy_score(Y_train, clf.predict(X_train)))
+
+print('AUC score linealSVC test', roc_auc_score(Y_test, clf.predict(X_test)))
+print('Accuracy score linealSVC test', accuracy_score(Y_test, clf.predict(X_test)))
+
+
+#%% Calculo Ein y Eout MLP
+clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', alpha=0.01, learning_rate_init=0.1  )
+clf.fit(X_train, Y_train)
+print('AUC score MLP train', roc_auc_score(Y_train, clf.predict(X_train)))
+print('Accuracy score MLP  train', accuracy_score(Y_train, clf.predict(X_train)))
+
+print('AUC score MLP  test', roc_auc_score(Y_test, clf.predict(X_test)))
+print('Accuracy score MLP test', accuracy_score(Y_test, clf.predict(X_test)))
+
+
+#%% Calculo Ein y Eout Random Forest
+clf = RandomForestClassifier(n_estimators=500, criterion='entropy', min_samples_split=8, min_samples_leaf=4, max_depth=10, max_leaf_nodes=8, n_jobs=-1)
+clf.fit(X_train, Y_train)
+print('AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
+print('Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
+
+print('AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
+print('Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
+
+#%% Calculo Ein y Eout poly SVM
+clf = svm.SVC(kernel='poly', degree=9)
+clf.fit(X_train, Y_train)
+print('AUC score poly SVM train', roc_auc_score(Y_train, clf.predict(X_train)))
+print('Accuracy score poly SVM  train', accuracy_score(Y_train, clf.predict(X_train)))
+
+print('AUC score poly SVM  test', roc_auc_score(Y_test, clf.predict(X_test)))
+print('Accuracy score poly SVM test', accuracy_score(Y_test, clf.predict(X_test)))
+
+#%% DUmmy test
+
+clf = DummyClassifier()
+clf.fit(X_train, Y_train)
+print('AUC score Dummy train', roc_auc_score(Y_train, clf.predict(X_train)))
+print('Accuracy score Dummy  train', accuracy_score(Y_train, clf.predict(X_train)))
+
+print('AUC score poly Dummy test', roc_auc_score(Y_test, clf.predict(X_test)))
+print('Accuracy score Dummy test', accuracy_score(Y_test, clf.predict(X_test)))
