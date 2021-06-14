@@ -189,7 +189,7 @@ El parámetro de regularización que hemos escogido, siguiendo lo indicado anter
 
 | Modelo              | Resultados |
 |---------------------|------------|
-| Linear SVC          | 0.6921     |  TODO
+| Linear SVC          | 0.6921     |
 | Perceptron 3 capas  | 0.704      |
 | Random Forest       | 0.7076     |
 

@@ -118,22 +118,22 @@ X_train = pca.fit_transform(X_train, Y_train)
 X_train = np.append(X_train, columnas, axis=1)
 
 #%% Embedd 2D
-# X_embedded = TSNE(n_components=2).fit_transform(X_train)
+X_embedded = TSNE(n_components=2).fit_transform(X_train)
 
-# #%% Visualizacion 2D
-# plt.scatter(X_embedded[:,0],X_embedded[:,1], c=Y_train)
-# plt.show()
+#%% Visualizacion 2D
+plt.scatter(X_embedded[:,0],X_embedded[:,1], c=Y_train)
+plt.show()
 
 #%% Optimizacion de parametros
 
 #array de valores de parametros razonables para la obtencion de parametros
-# print("comprobando parametros a usar: ")
-# print("--------------------------------------------------------------------------------------------------")
-# param_grid = {'penalty': ['l2'], 'loss':['hinge', 'squared_hinge'], 'dual': [False], 'random_state': [0]}
-# modelo = GridSearchCV(svm.LinearSVC(), param_grid, scoring='roc_auc')
-# modelo.fit(X_train, Y_train)
-# print("--------------------------------------------------------------------------------------------------")
-# print('Mejores parámetros del modelo LinearSVC: ', modelo.best_params_)
+print("comprobando parametros a usar: ")
+print("--------------------------------------------------------------------------------------------------")
+param_grid = {'penalty': ['l2'], 'loss':['hinge', 'squared_hinge'], 'dual': [False], 'random_state': [0]}
+modelo = GridSearchCV(svm.LinearSVC(), param_grid, scoring='roc_auc')
+modelo.fit(X_train, Y_train)
+print("--------------------------------------------------------------------------------------------------")
+print('Mejores parámetros del modelo LinearSVC: ', modelo.best_params_)
 
 #%% Linear SVC
 
@@ -158,36 +158,36 @@ list_data.append(results['test_score'].mean());
 input("\n--- Pulsar tecla para continuar ---\n")
 
 #%% Optimizacion parametros NN
-# print("--------------------------------------------------------------------------------------------------1")
-# param_grid = {'hidden_layer_sizes': [[50, 50], [50, 60], [50, 70], [50, 80], [50, 90], [50, 100],
-#                                 [60,50], [60,60], [60,70], [60,80], [60,90], [60,100], 
-#                                 [70, 50], [70, 60], [70, 70], [70, 80], [70, 90], [70, 100], 
-#                                 [80,50], [80,60], [80,70], [80,80], [80,90], [80,100], 
-#                                 [90,50], [90,60], [90,70], [90,80], [90,90], [90,100],
-#                                 [100,50], [100,60], [100,70], [100,80], [100,90], [100,100], ] }
+print("--------------------------------------------------------------------------------------------------1")
+param_grid = {'hidden_layer_sizes': [[50, 50], [50, 60], [50, 70], [50, 80], [50, 90], [50, 100],
+                                [60,50], [60,60], [60,70], [60,80], [60,90], [60,100], 
+                                [70, 50], [70, 60], [70, 70], [70, 80], [70, 90], [70, 100], 
+                                [80,50], [80,60], [80,70], [80,80], [80,90], [80,100], 
+                                [90,50], [90,60], [90,70], [90,80], [90,90], [90,100],
+                                [100,50], [100,60], [100,70], [100,80], [100,90], [100,100], ] }
 
-# modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
-# modelo.fit(X_train, Y_train)
-# print("--------------------------------------------------------------------------------------------------")
+modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
+modelo.fit(X_train, Y_train)
+print("--------------------------------------------------------------------------------------------------")
 
-# print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
-# input("\n--- Pulsar tecla para continuar ---\n")
-# #Ajustamos un poco más
-# print("--------------------------------------------------------------------------------------------------")
-# param_grid = {'hidden_layer_sizes': [[50, 50], [50,55], [55,50], [52,55], [55,52], [55,55]]}
-# modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
-# modelo.fit(X_train, Y_train)
-# print("--------------------------------------------------------------------------------------------------")
-# print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
-# input("\n--- Pulsar tecla para continuar ---\n")
-# print("--------------------------------------------------------------------------------------------------")
-# param_grid= {'solver':['lbfgs', 'adam', 'sgd'], 'hidden_layer_sizes': [[52, 55]], 'activation':['logistic', 'tanh', 'relu'], 'learning_rate_init':[0.001, 0.01, 0.0001], 'learning_rate':['constant', 'invscaling', 'adaptative']}
-# modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
-# modelo.fit(X_train, Y_train)
-# print("--------------------------------------------------------------------------------------------------")
+print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
+input("\n--- Pulsar tecla para continuar ---\n")
+#Ajustamos un poco más
+print("--------------------------------------------------------------------------------------------------")
+param_grid = {'hidden_layer_sizes': [[50, 50], [50,55], [55,50], [52,55], [55,52], [55,55]]}
+modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
+modelo.fit(X_train, Y_train)
+print("--------------------------------------------------------------------------------------------------")
+print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
+input("\n--- Pulsar tecla para continuar ---\n")
+print("--------------------------------------------------------------------------------------------------")
+param_grid= {'solver':['lbfgs', 'adam', 'sgd'], 'hidden_layer_sizes': [[52, 55]], 'activation':['logistic', 'tanh', 'relu'], 'learning_rate_init':[0.001, 0.01, 0.0001], 'learning_rate':['constant', 'invscaling', 'adaptative']}
+modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
+modelo.fit(X_train, Y_train)
+print("--------------------------------------------------------------------------------------------------")
 
-# print('Mejores parámetros del Perceptron de 3 capas: ', modelo.best_params_)
-# input("\n--- Pulsar tecla para continuar ---\n")
+print('Mejores parámetros del Perceptron de 3 capas: ', modelo.best_params_)
+input("\n--- Pulsar tecla para continuar ---\n")
 
 
 #%% Multilayer perceptron CV
@@ -209,17 +209,17 @@ list_data.append(results['test_score'].mean());
 input("\n--- Pulsar tecla para continuar ---\n")
 
 #%% RandomForest parametros
-# start_time = time()
-# print("--------------------------------------------------------------------------------------------------")
-# param_grid = {'n_estimators': [100,200,300,400, 500], 'criterion': ['gini', 'entropy'], 'n_jobs':[-1], 'random_state':[0], 'bootstrap':[True, False], 'oob_score':[True, False]}
-# modelo = GridSearchCV(RandomForestClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
-# modelo.fit(X_train, Y_train)
-# print("--------------------------------------------------------------------------------------------------")
-# elapsed_time = time() - start_time
-# print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
+start_time = time()
+print("--------------------------------------------------------------------------------------------------")
+param_grid = {'n_estimators': [100,200,300,400, 500], 'criterion': ['gini', 'entropy'], 'n_jobs':[-1], 'random_state':[0], 'bootstrap':[True, False], 'oob_score':[True, False]}
+modelo = GridSearchCV(RandomForestClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
+modelo.fit(X_train, Y_train)
+print("--------------------------------------------------------------------------------------------------")
+elapsed_time = time() - start_time
+print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
 
-# print('Mejores parámetros del Random Forest: ', modelo.best_params_)
-# input("\n--- Pulsar tecla para continuar ---\n")
+print('Mejores parámetros del Random Forest: ', modelo.best_params_)
+input("\n--- Pulsar tecla para continuar ---\n")
 
 #%% RandomForest CV
 
