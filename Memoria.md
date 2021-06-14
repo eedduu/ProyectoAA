@@ -1,5 +1,5 @@
 # Popularidad de Noticias Online
-
+Alumnos: Eduardo Morales Muñoz y Rubén Girela Castell
 ## Descripción del problema
 Tenemos un problema de clasificación binaria con un dataset en el que nos proporcionan diferentes características sobre una determinada noticia para intentar predecir si la noticia será popular en internet o no. El dataset se compone de 39797 samples recopilados de la página de noticias Mashable, y tiene los atributos y los targets en el mismo archivo. El dataset nos proporciona en la última columna de los datos el número de shares (interacciones/veces compartido) de una noticia en esa página, y ese número es el que vamos a usar para decidir si un artículo es popular o no, pero no lo usaremos como un atributo sino que lo convertiremos en valores booleanos para usarlos como target de la clasificación binaria.
 
@@ -97,14 +97,14 @@ Calculamos el error del modelo como la media de los 5 errores obtenidos de evalu
 Para la obtención de los mejores parámetros vamos a usar la función GridSearchCV, que encuentra los mejores parámetros para un estimador, dentro de unos valores dados, probando combinaciones de esos parámetros en Cross-Validation (para disminuir el sobreajuste), y nos da el mejor estimador junto con el mejor error obtenido y los parámetros de dicho estimador. Esta función forma parte del módulo model_selection de sklearn. Los parámetros de ésta función son: el modelo del que queremos probar los parámetros, un diccionario donde estén los valores propuestos y los atributos, y la métrica de evaluación con la que queremos calcular el error del modelo. Esta función la hemos usado para estimar los parámetros que no eran de regularización.
 
 
-## Modelos seleccionados  TODO
+## Modelos seleccionados
 Para abordar el problema hemos seleccionado como modelo lineal una **SVM** de clasificación con kernel lineal y como modelos no lineales **Random Forest** y **Perceptrón Multicapa** de 3 capas.
 
 Para resolver el problema usaremos la clase de las funciones lineales en el caso de la SVM lineal. En el caso de Perceptrón multicapa y RandomForest, debido a las características de los algoritmos de aprendizaje, desconocemos las funciones que usarán, pero previsiblemente no serán lineales.
 
 Hemos elegido SVM ya que nos parece la solución linear que más nos puede aportar. SVC busca linealidad en dimensiones superiores a la de partida, por lo que puede encontrar una separación lineal en conjuntos de datos donde el Perceptrón o la Regresión Lineal no lo harían.
 
-En el Perceptrón Multicapa tenemos que es un modelo muy potente capaz de aproximar funciones objetivo muy complejas, por lo que teniendo en cuenta el conjunto de datos creemos que puede ser una buena solución.
+En el Perceptrón Multicapa tenemos que es un modelo muy potente capaz de aproximar funciones objetivo muy complejas como la que previsiblemente tenemos en nuestro problema. De hecho si f se puede descomponer en perceptrones usando funciones OR y AND entonces se puede implementar con nuestro perceptron de 3 capas, y aunque no lo sea, si el límite de decisión es suave entonces se puede aproximar tanto como se quiera a f.
 
 Random Forest es un predictor muy eficiente basado en bagging, por lo que cuenta con las ventajas del bagging. Cada árbol tiene alta varianza y bajo sesgo, y al hacer el promedio de los árboles reduciremos la varianza, por lo que tenemos un predictor con bajo sesgo y baja varianza. Además construye árboles no correlados cogiendo m predictores para una partición en lugar de usarlos todos, lo que reduce aún más la varianza. Aún así, tenemos que tener cuidado con el sobreajuste, ya que si no ajustamos bien los parámetros podemos acabar con casi cero error en la muestra pero mucho error en el test.
 
@@ -189,9 +189,11 @@ El parámetro de regularización que hemos escogido, siguiendo lo indicado anter
 
 | Modelo              | Resultados |
 |---------------------|------------|
-| Linear SVC          | 0.6921     |
+| Linear SVC          | 0.639      |  
 | Perceptron 3 capas  | 0.704      |
 | Random Forest       | 0.7076     |
+
+![Comparacion grafica de AUC score en cross validation](img/cross_validation.png)
 
 Comparando los resultados usando **Cross Validation** de los diferentes modelos, como se ha explicado antes, se puede ver en la tabla el mejor modelo es **Random Forest**, ya que da el mejor resultado de entre las tres hipótesis.
 
@@ -228,20 +230,31 @@ Vamos a ver ahora, a modo de curiosidad, que hubiera pasado si no hubieramos int
 | AUC Score               | 1.0 | 0.499 |
 | Accuracy Score          | 1.0 | 0.488 |
 
+![Comparacion gráfica Ein AUC Score](img/ein.png){width=40%}
+
 Como vemos hay un sobreajuste enorme para el modelo sin regularización, teniendo una puntuación perfecta en los datos de entrenamiento pero un rendimiento pésimo en los datos de test, llegando a obtener peor clasificación que el clasificador aleatorio.
 
 Con todos estos datos, podemos afirmar que hemos entrenado un buen modelo y que generaliza bien, sin apenas sobreajuste. El resultado no es perfecto, y podría ser mejorable, pero el umbral de mejora tampoco es tan alto ya que en los diferentes papers que tratan este dataset, el máximo umbral de clasificación (AUC o Accuracy) es del 70%, donde se usan métodos más avanzados y se requiere de más potencia computacional de la que nosotros disponemos.
 
-Los errores calculados se han hecho con la metrica AUC o ROC AUC, dandonos esos resultados, bastante optimitas en el Ein, pero pesimos en el Etest, de los cuales Random Fores aproxima el Eout al Ein, mientras que las otros modelos son más distantes.
-Demostrando otra vez que **Random Forest** se ajusta más al modelo que otros algoritmos.
+![Comparacion grafica Eout AUC Score](img/etest.png){width=40%}
 
-##TODO
-- Discutir idoniedad de los modelos para el problema
-- Gráficas para comparación de error
-- graficas y tal
-- Bibliografia
+
+
+
+
+
 
 ## Bibliografia
-- (LinearSVC) https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html
-- (Random Forest) https://www.iartificial.net/random-forest-bosque-aleatorio/#Random_Forest_en_scikit-learn_hiper-parametros_mas_utiles
-- (Random Forest) https://en.wikipedia.org/wiki/Random_forest
+- [LinearSVC](https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html)
+- [Random Forest](https://www.iartificial.net/random-forest-bosque-aleatorio/#Random_Forest_en_scikit-learn_hiper-parametros_mas_utiles)
+- [Random Forest](https://en.wikipedia.org/wiki/Random_forest)
+- [RF](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html)
+- [AUC](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html#sklearn.metrics.roc_auc_score)
+- [Accuracy](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html#sklearn.metrics.accuracy_score)
+- [Regularizacion en SVC](https://scikit-learn.org/stable/auto_examples/svm/plot_svm_scale_c.html)
+- [MLP](https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html)
+- [Cross Validation](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.cross_validate.html)
+- [GridSearch](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html)
+- [Linear SVC](https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html)
+- [Paper](http://cs229.stanford.edu/proj2015/328_report.pdf)
+- [Paper](https://repositorium.sdum.uminho.pt/bitstream/1822/39169/1/main.pdf)
