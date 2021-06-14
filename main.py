@@ -277,6 +277,22 @@ print('Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
 print('AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
 print('Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
 
+clf = RandomForestClassifier(n_jobs=-1)
+clf.fit(X_train, Y_train)
+print('Defecto AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
+print('Defecto Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
+
+print('Defecto AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
+print('Defecto Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
+
+clf = RandomForestClassifier(n_estimators=500, criterion='entropy', oob_score=True, n_jobs=-1)
+clf.fit(X_train, Y_train)
+print('SR AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
+print('SR Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
+
+print('SR AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
+print('SR Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
+
 #%% Calculo Ein y Eout poly SVM
 # clf = svm.SVC()
 # clf.fit(X_train, Y_train)
