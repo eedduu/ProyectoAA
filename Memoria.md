@@ -1,5 +1,5 @@
 # Popularidad de Noticias Online
-Alumnos: Eduardo Morales Muñoz y Rubén Girela Castell
+Alumnos: Eduardo Morales Muñoz y Rubén Girela Castellón
 ## Descripción del problema
 Tenemos un problema de clasificación binaria con un dataset en el que nos proporcionan diferentes características sobre una determinada noticia para intentar predecir si la noticia será popular en internet o no. El dataset se compone de 39797 samples recopilados de la página de noticias Mashable, y tiene los atributos y los targets en el mismo archivo. El dataset nos proporciona en la última columna de los datos el número de shares (interacciones/veces compartido) de una noticia en esa página, y ese número es el que vamos a usar para decidir si un artículo es popular o no, pero no lo usaremos como un atributo sino que lo convertiremos en valores booleanos para usarlos como target de la clasificación binaria.
 
