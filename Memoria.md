@@ -189,9 +189,9 @@ El parámetro de regularización que hemos escogido, siguiendo lo indicado anter
 
 | Modelo              | Resultados |
 |---------------------|------------|
-| Linear SVC          | 0.69721    |  TODO
-| Perceptron 3 capas  | 0.641      |
-| Random Forest       | 0.66       |
+| Linear SVC          | 0.6921     |  TODO
+| Perceptron 3 capas  | 0.704      |
+| Random Forest       | 0.7076     |
 
 Comparando los resultados usando **Cross Validation** de los diferentes modelos, como se ha explicado antes, se puede ver en la tabla el mejor modelo es **Random Forest**, ya que da el mejor resultado de entre las tres hipótesis.
 

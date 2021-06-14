@@ -83,6 +83,7 @@ media = np.mean(X_train, axis=0).mean()
 print("Sin ajustar los datos")
 print('Varianza: ', var)
 print('Media: ', media)
+input("\n--- Pulsar tecla para continuar ---\n")
 #%% Standarizacion
 ####
 #### NORMALIZACIÓN
@@ -102,6 +103,7 @@ media = np.mean(X_train, axis=0).mean()
 print("\nCon los datos ajustados")
 print('Varianza: ', var)
 print('Media: ', media)
+input("\n--- Pulsar tecla para continuar ---\n")
 #%% Reducción de dimensionalidad
 columnas = X_train[:, 11:17]
 columnas = np.append(columnas, X_train[:, 29:36], axis=1)
@@ -139,12 +141,12 @@ X_train = np.append(X_train, columnas, axis=1)
 list_data = []
 nombres = ["LinearSVC", "MLP", "RandomForest"]
 
-# #creamos el modelo
-# clf = svm.LinearSVC( dual=False, random_state=0)
+#creamos el modelo
+clf = svm.LinearSVC( dual=False, random_state=0)
 
-# #y entrenamos el modelo con la muestra dada
-# results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
-# print('AUC  en Cross-Validation con LinearSVC (sin regularizacion)', results['test_score'].mean())
+#y entrenamos el modelo con la muestra dada
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+print('AUC  en Cross-Validation con LinearSVC (sin regularizacion)', results['test_score'].mean())
 
 
 clf = svm.LinearSVC(C=0.00000000000000001, dual=False, random_state=0)
@@ -152,6 +154,8 @@ clf = svm.LinearSVC(C=0.00000000000000001, dual=False, random_state=0)
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
 print('AUC  en Cross-Validation con LinearSVC (con regularizacion)', results['test_score'].mean())
 list_data.append(results['test_score'].mean());
+
+input("\n--- Pulsar tecla para continuar ---\n")
 
 #%% Optimizacion parametros NN
 # print("--------------------------------------------------------------------------------------------------1")
@@ -167,7 +171,7 @@ list_data.append(results['test_score'].mean());
 # print("--------------------------------------------------------------------------------------------------")
 
 # print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
-
+# input("\n--- Pulsar tecla para continuar ---\n")
 # #Ajustamos un poco más
 # print("--------------------------------------------------------------------------------------------------")
 # param_grid = {'hidden_layer_sizes': [[50, 50], [50,55], [55,50], [52,55], [55,52], [55,55]]}
@@ -175,6 +179,7 @@ list_data.append(results['test_score'].mean());
 # modelo.fit(X_train, Y_train)
 # print("--------------------------------------------------------------------------------------------------")
 # print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
+# input("\n--- Pulsar tecla para continuar ---\n")
 # print("--------------------------------------------------------------------------------------------------")
 # param_grid= {'solver':['lbfgs', 'adam', 'sgd'], 'hidden_layer_sizes': [[52, 55]], 'activation':['logistic', 'tanh', 'relu'], 'learning_rate_init':[0.001, 0.01, 0.0001], 'learning_rate':['constant', 'invscaling', 'adaptative']}
 # modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
@@ -182,16 +187,17 @@ list_data.append(results['test_score'].mean());
 # print("--------------------------------------------------------------------------------------------------")
 
 # print('Mejores parámetros del Perceptron de 3 capas: ', modelo.best_params_)
+# input("\n--- Pulsar tecla para continuar ---\n")
 
 
-# #%% Multilayer perceptron CV
-# clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', learning_rate='constant', learning_rate_init=0.01, solver='sgd'  )
-# clf.fit(X_train, Y_train)
-# results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+#%% Multilayer perceptron CV
+clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', learning_rate='constant', learning_rate_init=0.01, solver='sgd'  )
+clf.fit(X_train, Y_train)
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
 
-# print('Perceptrón 3 capas sin regularizacion en Cross-Validation AUC Score', results['test_score'].mean())
+print('Perceptrón 3 capas sin regularizacion en Cross-Validation AUC Score', results['test_score'].mean())
 
-
+input("\n--- Pulsar tecla para continuar ---\n")
 
 clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', learning_rate='constant', learning_rate_init=0.01, solver='sgd' , alpha=5)
 clf.fit(X_train, Y_train)
@@ -200,8 +206,10 @@ results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_au
 print('Perceptrón 3 capas con regularizacion en Cross-Validation AUC Score', results['test_score'].mean())
 list_data.append(results['test_score'].mean());
 
+input("\n--- Pulsar tecla para continuar ---\n")
+
 #%% RandomForest parametros
-start_time = time()
+# start_time = time()
 # print("--------------------------------------------------------------------------------------------------")
 # param_grid = {'n_estimators': [100,200,300,400, 500], 'criterion': ['gini', 'entropy'], 'n_jobs':[-1], 'random_state':[0], 'bootstrap':[True, False], 'oob_score':[True, False]}
 # modelo = GridSearchCV(RandomForestClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
@@ -211,17 +219,18 @@ start_time = time()
 # print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
 
 # print('Mejores parámetros del Random Forest: ', modelo.best_params_)
+# input("\n--- Pulsar tecla para continuar ---\n")
 
-# #%% RandomForest CV
+#%% RandomForest CV
 
 
-# start_time = time()
-# clf = RandomForestClassifier(n_estimators=500, criterion='entropy', oob_score=True, n_jobs=-1, random_state=0)
-# results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
-# elapsed_time = time() - start_time
-# print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
-# print('Random Forest (sin regularizacion) en Cross-Validation AUC Score', results['test_score'].mean())
-
+start_time = time()
+clf = RandomForestClassifier(n_estimators=500, criterion='entropy', oob_score=True, n_jobs=-1, random_state=0)
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+elapsed_time = time() - start_time
+print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
+print('Random Forest (sin regularizacion) en Cross-Validation AUC Score', results['test_score'].mean())
+input("\n--- Pulsar tecla para continuar ---\n")
 
 start_time = time()
 clf = RandomForestClassifier(n_estimators=500, criterion='entropy', oob_score=True, max_leaf_nodes=4, n_jobs=-1, random_state=0)
@@ -230,13 +239,14 @@ elapsed_time = time() - start_time
 print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
 print('Random Forest (con regularizacion) en Cross-Validation AUC Score', results['test_score'].mean())
 list_data.append(results['test_score'].mean());
+input("\n--- Pulsar tecla para continuar ---\n")
 
 #%% Grafica de barras de Cross-Validation
 fig, ax = plt.subplots()
 ax.bar(nombres,list_data)
 fig.suptitle('Comparación Cross-Validation')
 fig.show()
-
+input("\n--- Pulsar tecla para continuar ---\n")
 
 #%% Preparo datos test
 
@@ -264,17 +274,21 @@ clf = RandomForestClassifier(n_estimators=500, criterion='entropy', oob_score=Tr
 clf.fit(X_train, Y_train)
 print('AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
 print('Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 print('AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
 print('Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 clf = RandomForestClassifier(n_jobs=-1, random_state=0)
 clf.fit(X_train, Y_train)
 print('Defecto AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
 print('Defecto Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 print('Defecto AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
 print('Defecto Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 list_ein.append(roc_auc_score(Y_train, clf.predict(X_train)))
 list_etest.append(roc_auc_score(Y_test, clf.predict(X_test)))
@@ -283,9 +297,11 @@ clf = RandomForestClassifier(n_estimators=500, criterion='entropy', oob_score=Tr
 clf.fit(X_train, Y_train)
 print('SR AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
 print('SR Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 print('SR AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
 print('SR Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 list_ein.append(roc_auc_score(Y_train, clf.predict(X_train)))
 list_etest.append(roc_auc_score(Y_test, clf.predict(X_test)))
@@ -298,9 +314,11 @@ clf = DummyClassifier()
 clf.fit(X_train, Y_train)
 print('AUC score Dummy train', roc_auc_score(Y_train, clf.predict(X_train)))
 print('Accuracy score Dummy  train', accuracy_score(Y_train, clf.predict(X_train)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 print('AUC score poly Dummy test', roc_auc_score(Y_test, clf.predict(X_test)))
 print('Accuracy score Dummy test', accuracy_score(Y_test, clf.predict(X_test)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 list_ein.append(roc_auc_score(Y_train, clf.predict(X_train)))
 list_etest.append(roc_auc_score(Y_test, clf.predict(X_test)))
@@ -311,33 +329,33 @@ clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', learning
 clf.fit(X_train, Y_train)
 print('AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
 print('Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 print('AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
 print('Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', learning_rate='constant', learning_rate_init=0.01, solver='sgd' , alpha=15)
 clf.fit(X_train, Y_train)
 print('AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
 print('Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 print('AUC score RF test', roc_auc_score(Y_test, clf.predict(X_test)))
 print('Accuracy score RF test', accuracy_score(Y_test, clf.predict(X_test)))
+input("\n--- Pulsar tecla para continuar ---\n")
 
 #%% Grafica Ein y Etest
 nombres = ['Dummy', 'RandomForest Default','RandomForest Sin Regularización']
 x = np.arange(len(nombres))
 width = 0.35
 
-fig2, ax2 = plt.subplots()
+fig, ax = plt.subplots()
+ax.bar(nombres,list_ein)
+fig.suptitle('Comparación Ein')
+fig.show()
 
-rect1 = ax.bar(x-width/2, list_ein, width, label='Ein')
-rect2 = ax.bar(x+width/2, list_etest, width, label='Etest')
-
-ax2.set_xticks(x)
-ax2.set_xticklabels(nombres)
-ax2.legend()
-ax2.bar_label(rect1, padding=3)
-ax2.bar_label(rect2, padding=3)
-fig2.suptitle('Comparación Ein y Etest')
-fig2.tight_layout()
-fig2.show()
+fig, ax = plt.subplots()
+ax.bar(nombres,list_etest)
+fig.suptitle('Comparación Etest')
+fig.show()
