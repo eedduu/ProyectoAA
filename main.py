@@ -335,7 +335,7 @@ rect2 = ax.bar(x+width/2, list_etest, width, label='Etest')
 
 ax2.set_xticks(x)
 ax2.set_xticklabels(nombres)
-ax2.lengend()
+ax2.legend()
 ax2.bar_label(rect1, padding=3)
 ax2.bar_label(rect2, padding=3)
 fig2.suptitle('Comparación Ein y Etest')
