@@ -97,19 +97,19 @@ Calculamos el error del modelo como la media de los 5 errores obtenidos de evalu
 Para la obtención de los mejores parámetros vamos a usar la función GridSearchCV, que encuentra los mejores parámetros para un estimador, dentro de unos valores dados, probando combinaciones de esos parámetros en Cross-Validation (para disminuir el sobreajuste), y nos da el mejor estimador junto con el mejor error obtenido y los parámetros de dicho estimador. Esta función forma parte del módulo model_selection de sklearn. Los parámetros de ésta función son: el modelo del que queremos probar los parámetros, un diccionario donde estén los valores propuestos y los atributos, y la métrica de evaluación con la que queremos calcular el error del modelo. Esta función la hemos usado para estimar los parámetros que no eran de regularización.
 
 
-## Modelos seleccionados
+## Modelos seleccionados  TODO
 Para abordar el problema hemos seleccionado como modelo lineal una **SVM** de clasificación con kernel lineal y como modelos no lineales **Random Forest** y **Perceptrón Multicapa** de 3 capas.
 
 Para resolver el problema usaremos la clase de las funciones lineales en el caso de la SVM lineal. En el caso de Perceptrón multicapa y RandomForest, debido a las características de los algoritmos de aprendizaje, desconocemos las funciones que usarán, pero previsiblemente no serán lineales.
 
-Hemos elegido SVM ya que nos parece la solución linear que más nos puede aportar. SVC tiende a sobreajustar los datos de entrenamiento en menor medida que otros modelos como Regresión Lineal. Además SVC busca linealidad en dimensiones superiores a la de partida, por lo que puede encontrar una separación lineal en conjuntos de datos donde el Perceptrón o la Regresión Lineal no lo harían.
+Hemos elegido SVM ya que nos parece la solución linear que más nos puede aportar. SVC busca linealidad en dimensiones superiores a la de partida, por lo que puede encontrar una separación lineal en conjuntos de datos donde el Perceptrón o la Regresión Lineal no lo harían.
 
 En el Perceptrón Multicapa tenemos que es un modelo muy potente capaz de aproximar funciones objetivo muy complejas, por lo que teniendo en cuenta el conjunto de datos creemos que puede ser una buena solución.
 
-Una de las ventajas de usar Random Forest es que maneja grandes conjuntos de datos con mayor dimensionalidad.
+Random Forest es un predictor muy eficiente basado en bagging, por lo que cuenta con las ventajas del bagging. Cada árbol tiene alta varianza y bajo sesgo, y al hacer el promedio de los árboles reduciremos la varianza, por lo que tenemos un predictor con bajo sesgo y baja varianza. Además construye árboles no correlados cogiendo m predictores para una partición en lugar de usarlos todos, lo que reduce aún más la varianza. Aún así, tenemos que tener cuidado con el sobreajuste, ya que si no ajustamos bien los parámetros podemos acabar con casi cero error en la muestra pero mucho error en el test.
 
 ## Regularización usada
-Hemos visto necesario usar una alta regularización en los modelos, ya que los modelos no lineales que usamos son muy propensos a sobreajustarse a los datos. Además, el conjunto de datos que tenemos no es facilmente separable y requerirá de una función compleja, por lo que un buen rendimiento del modelo en el entrenamiento se puede confundir facilmente con un sobreajuste del modelo a los datos. Además, fijandonos en los valores de predicción obtenidos en varios modelos de los papers que tratan este dataset, hemos visto que los resultados de nuestros modelos con poca o ninguna regularización eran, como poco, muy optimistas, por lo que podíamos intuir un sobreajuste a los datos de entrenamiento. De esta manera, hemos decidido sacrificar un poco de error Ein para que nuestras hipótesis no sufran de sobreajuste. De esta manera hemos calculado el error de nuestros modelos sin regularización (o regularización por defecto) para luego ir aumentando la fuerza de la regularización poco a poco hasta obtener un modelo menos sobreajustado, sacrificando aproximadamente 5 puntos en la métrica de clasificación de cada modelo. 
+Hemos visto necesario usar una alta regularización en los modelos, ya que los modelos no lineales que usamos son muy propensos a sobreajustarse a los datos. Además, el conjunto de datos que tenemos no es facilmente separable y requerirá de una función compleja, por lo que un buen rendimiento del modelo en el entrenamiento se puede confundir facilmente con un sobreajuste del modelo a los datos. Además, fijandonos en los valores de predicción obtenidos en varios modelos de los papers que tratan este dataset, hemos visto que los resultados de nuestros modelos con poca o ninguna regularización eran, como poco, muy optimistas, por lo que podíamos intuir un sobreajuste a los datos de entrenamiento. De esta manera, hemos decidido sacrificar un poco de error Ein para que nuestras hipótesis no sufran de sobreajuste. De esta manera hemos calculado el error de nuestros modelos sin regularización (o regularización por defecto) para luego ir aumentando la fuerza de la regularización poco a poco hasta obtener un modelo menos sobreajustado, sacrificando aproximadamente 5 puntos en la métrica de clasificación de cada modelo. Antes de aplicar la regularización, hemos calculado los mejores parámetros para cada algoritmo de aprendizaje.
 
 
 Usamos la regularización L2 (Ridge) en SVC y Perceptrón multicapa ya que es la que mejor se adapta a nuestro problema. Si usaramos regularización L1 entonces los pesos de algunas de nuestras variables serían cero, cosa que no nos interesa en absoluto ya que hemos aplicado previamente PCA por lo que ya tenemos variables reducidas. En el Perceptrón multicapa, el parámetro de regularización es alpha, y cuanto mayor es este valor, mayor será la regularización del modelo. En LinearSVC el parámetro de regularización es C, que es inversamente proporcional a la fuerza de la regularización.
@@ -121,22 +121,21 @@ Para Random Forest, la regularización no se basa en L1 o L2, sino que tenemos c
 
 
 ## Modelo Lineal SVC
-Este modelo es similar al SVC no lineal con parametros `kernel='linear'`, pero implementado en terminos de **liblinear** en lugar de **libsvm**, por lo que segun la pagina oficial de sklearn aporta mayor flexibilidad en la elección de penalizaciones y funciones de perdida, a parte de que escala mejor con muestras de gran tamaño.
+Este modelo es similar a SVC con parametros `kernel='linear'`, pero implementado en terminos de **liblinear** en lugar de **libsvm**, por lo que segun la pagina oficial de sklearn aporta mayor flexibilidad en la elección de penalizaciones y funciones de perdida, a parte de que escala mejor con muestras de gran tamaño. Para usarlo hemos hecho uso de la libreria sklearn.svm y en ella usamos la funcion LinearSVC().
 
-Para aplicar este modelo hemos usado la libreria **sklearn.svm** y en ella usamos la funcion **LinearSVC()**.
+Tras aplicar GridSearchCV hemos obtenido el valor **squared hinge** para el parámetro **loss**. Hemos usado valores predefinidos para los parámetros penalty y Dual. Hemos seleccionado penalty=l2 porque es el tipo de regularización que nos interesa para nuestro problema. El parámetro Dual selecciona si queremos resolver el problema principal o el problema dual, y en la página de ayuda de sklearn se recomienda ponerlo en False para datasets donde la cantidad de las muestras sea mayor que la cantidad de características.
 
-Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cross-Validation** y comparar los resultados de dicho modelo usando los parametros por defecto y con los parametros personalizados, para medir dicho modelo usaremos la metrica **AUC**:
 
 | LinearSVC                                                | AUC      |
 |----------------------------------------------------------|----------|
-| Parametros por defecto                                   | 0.69721  |
-| Con los parametros: C=0.5, dual=False, random_state=0    | 0.69561  |
+| Sin regularización                                       | 0.692    |
+| Regularización                                           | 0.639    |
 
-Haciendo pruebas cambiando los diferentes parametros no veiamos mejora alguna con respecto a los parametros por defecto, un ejemplo es la tabla de arriba, puesto que al cambiar los parametros empeoraba nuestro modelo.
 
-(NOTA: la eleccion de los parametros personalizados hemos usado **GridSearchCV** que comprueba que parametros ajusta mejor el modelo)
+
 
 ## Perceptrón Multicapa
+
 Para implementar el Perceptrón multicapa hemos usado la función MLPClassifier del módulo neural_network de sklearn. Para usar la arquitectura de 3 capas debemos pasarle un array de longitud 2 con la cantidad de unidades por capa de cada capa. Así tendremos 2 capas ocultas más la capa de salida que conformarán la arquitectura de 3 capas.
 
 Para el cálculo de los parámetros hemos hecho uso de GridSearchCV, pero debido a la ingente cantidad de valores posibles y la potencia computacional que requeriría hacer todas las comprobaciones a la vez, hemos decidido ajustar primero el número de neuronas por capa y luego los demas parámetros. Para el número de neuronas por capa hemos usado pares (i,j) donde i,j son múltiplos de 10 entre 50 y 100. Hemos obtenido así que la mejor combinación de neuronas por capa en (50,50). Luego para afinar más hemos tomado pares cercanos a este, obteniendo que la mejor combinación es (52,55) neuronas.
@@ -145,73 +144,104 @@ Con este parámetro fijado, hemos vuelto a usar GridSearchCV para la obtención 
 
 | Parámetro          | Valor    |
 |--------------------|----------|
-| Activation         | Logistic |
-| Alpha              | 0.01     |
+| Activation         | logistic |
+| Solver             | sgd      |
 | learning_rate      | constant |
-| learning_rate_init | 0.1      |
+| learning_rate_init | 0.01     |
 
-El parámetro de activación es la función que tendrán las capas ocultas en cada unidad, en este caso la función sigmoide. Alpha es nuestro parámetro de regularización, cuanto más grande sea más regularización tendremos, por defecto es 0.0001. El learning_rate es constante, por lo que no cambiará a lo largo del aprendizaje, y su valor es 0.1.
+El parámetro de activación es la función que tendrán las capas ocultas en cada unidad, en este caso la función sigmoide. El learning rate inicial será de 0.01. El parámetro learning_rate='constant' hace referencia a como va variando el learning rate a lo largo del aprendizaje, en este caso será constante a lo largo de todo el aprendizaje. Este parámetro solo se usa cuando el algoritmo solver empleado es SGD, que es nuestro caso. Para el parámetro **alpha**, el de regularización, hemos decidido dejarlo en 2.5, que no es un valor muy alto, pero la subida de éste parámetro penalizaba demasiado la puntuación del modelo.
 
 Aquí una tabla que resume un poco lo dicho anteriormente y muestra los scores en cada caso.
 
-| Tamaño de Capas                           | Parámetros  | AUC Score |
-|-------------------------------------------|-------------|-----------|
-| [50, 50]                                  | Por defecto | 0.659     |
-| [52, 55]                                  | Por defecto | 0.661     |
-| [52, 55]                                  | Optimizados | 0.704     |
-| [100, 100] (por defecto)                  | Por defecto | 0.658     |
+| Tamaño de Capas                           | Parámetros                   | AUC Score |
+|-------------------------------------------|------------------------------|-----------|
+| [50, 50]                                  | Por defecto                  | 0.659     |
+| [52, 55]                                  | Por defecto                  | 0.661     |
+| [52, 55]                                  | Optimizados                  | 0.704     |
+| [52, 55]                                  | Optimizados + Regularización | 0.641     |
+| [100, 100] (por defecto)                  | Por defecto                  | 0.658     |
 
 ## Random Forest
-Este algoritmo esta construido sobre la idea de bagging, aportando mejoras. Ademas es un algoritmo flexible y sencillo de usar para clasificar y derivar funciones en función del numero de arboles de decisión.
-Con lo cual es un conjunto de arboles de decisión individuales que operan como un conjunto. De tal forma que cada arbol devuelve una predicción de clase y se queda con la clase con mayor votos, convirtiendola en el modelo de predicción preferido.
+Para aplicarlo hemos usado la libreria ensemble de sklearn y en ella usamos la funcion RandomForestClassifier.
 
-Para aplicarlo hemos usado la libreria **sklearn.ensemble** y en ella usamos la funcion **RandomForestClassifier**.
+Hemos obtenido los parámetros del algoritmo de aprendizaje con la función GridSearchCV tal como se indica más arriba, obteniendo los siguientes resultados:
 
-Aplicando este modelo vamos a comprobar como de bueno es el modelo usando **Cross-Validation** y comparar los resultados de dicho modelo usando los parametros por defecto y con los parametros personalizados, para medir dicho modelo usaremos la metrica **AUC**:
+| Parámetro    | Valor   |
+|--------------|---------|
+| n_estimators | 500     |
+| criterion    | entropy |
+| n_jobs       | -1      |
+| bootstrap    | True    |
+| oob_score    | True    |
+| random_state | 0       |
 
-| Random Forest                                                                                          | AUC      |
-|--------------------------------------------------------------------------------------------------------|----------|
-| Parametros por defecto                                                                                 | 0.69871  |
-| Con los parametros: n_estimators=800, criterion='entropy', min_samples_split=8, min_samples_leaf=2     | 0.65736  |
+n_estimators es el número de árboles que vamos a generar, y criterion es la función que mide la calidad de la división. La opción entropy prioriza la ganancia de información, mientras que la otra (Gini) se basa en la impureza. Usamos n_jobs=-1 para que se usen todos los cores disponibles del procesador y así agilizar el aprendizaje. Con random_state=0 nos aseguramos de que se puedan reproducir los resultados. Con bootstrap=true usamos una parte de los datos de entrenamiento en lugar de usarlos enteros, y con oob_score=True (solo si bootstrap=True) usamos las muestras que no hemos escogido para estimar una generalización.
 
-Se han modificado esos parametros porque mejoraba un poco más los resultados, ampliando el numero de arboles que va a generar a 800, cambiando la funcion que medira la calidad de una division la por **defecto (gini)**, por la de **entropy**, tambien cambiamos el numero minimo de muestras necesarias antes de dividir el nodo, que por defecto es 2 y lo ampliamos al doble y le indicamos el numero minimo de muestras que debe haber en un nodo final o nodo hoja, que por defecto es 1, pero ampliando a 8 obtenemos un mejor resultado.
-De esos parametros solo el min_samples_split y min_samples_leaf son parametros regularizables de random forest. Por otro lado no se ha aumentado la profundidad de lo arboles, porque a parte de hacerse pruebas y ver que empeoraba el resultado, en particular los arboles que tienen mucha profundidad suelen tender a memorizar patrones, llegando a ajustarse en exceso, dicho de otro modo llegando a tener un sesgo bajo, pero una varianza muy alta. Con lo cual es lo que queremos evitar.
+El parámetro de regularización que hemos escogido, siguiendo lo indicado anteriormente, ha sido max_leaf_nodes=4, que limita a 4 el número de nodos hoja que podrá tener un árbol.
 
-(NOTA: la eleccion de los parametros personalizados hemos usado **GridSearchCV** que comprueba que parametros ajusta mejor el modelo)
+| Regularización | Parámetros  | AUC Score |
+|----------------|-------------|-----------|
+| No             | Por defecto | 0.687     |
+| No             | Optimizados | 0.708     |
+| Si             | Optimizados | 0.66      |
 
-## Modelo a usar
+## Mejor hipótesis
 
-| algoritmos          | Resultados |
+| Modelo              | Resultados |
 |---------------------|------------|
-| Linear SVC          | 0.69721    |
-| Perceptron 3 capas  | 0.70469    |
-| Random Forest       | 0.71187    |
+| Linear SVC          | 0.69721    |  TODO
+| Perceptron 3 capas  | 0.641      |
+| Random Forest       | 0.66       |
 
-Comparando los resultados usando **Cross Validation** de los diferentes algoritmos el modelo que más se ajusta, por lo que se puede ver en la tabla es **Random Forest**, ya que da un buen resultado.
+Comparando los resultados usando **Cross Validation** de los diferentes modelos, como se ha explicado antes, se puede ver en la tabla el mejor modelo es **Random Forest**, ya que da el mejor resultado de entre las tres hipótesis.
+
 Por otro lado es uno de los metodos más populares en el Machine Learning, ya que se aproxima más a cumplir con los requisitos del objetivo.
 Con lo cual por esas razones elegimos el algoritmo **Random Forest** para este problema.
 
-## Evaluación y comparación de modelos entrenados
+## Evaluación del modelo
+Ya hemos seleccionado Random Foresto como nuestro mejor modelo, ahora tenemos que calcular el error Eout entrenando nuestro modelo sobre todo el conjunto de entrenamiento y evaluándolo sobre la partición de test que hicimos al principio.
 
-| algoritmos          | Ein       | Etest    |
-|---------------------|-----------|----------|
-| Linear SVC          | 0.6434    | 0.4992   |
-| Perceptron 3 capas  | 0.7092    | 0.5231   |
-| Random Forest       | 0.6167    | 0.6019   |
+Para poder evaluar el modelo necesitamos realizar a los datos de test las mismas transformaciones que le hicimos a los datos de entrenamiento. Para ello usamos las funciones que teníamos para el preprocesado de los datos y transformamos X_test con esas funciones sin ajustarlas antes a ese conjunto, de manera que ya estaban ajustadas anteriormente a los datos de entrenamiento. En el caso de PCA debemos hacer lo mismo que con los datos de entrenamiento, ya que debemos guardar las variables categóricas para añadirlas una vez hecha la reducción de dimensionalidad.
+
+Una vez preparados los datos de test, entrenamos el modelo con los datos de entrenamiento y evaluamos para obtener Ein, y luego evaluamos en el conjunto de test para obtener Eout.
+
+| Random Forest  | Ein   | Eout  |
+|----------------|-------|-------|
+| AUC Score      | 0.62  | 0.602 |
+| Accuracy Score | 0.619 | 0.599 |
+
+Como se ve en la tabla anterior hemos conseguido un modelo que, aunque no tiene un score muy alto, clasifica bien los datos sobre el 60% de las veces y además tiene muy poco sobreajuste, por tanto es un modelo que generaliza bien los nuevos datos.
+
+Para ponerlo un poco en contexto, vamos a evaluar los datos de entrenamiento y de test con un clasificador aleatorio (DummyClassifier de sklearn) para hacer la comparativa.
+
+| Dummy Classifier | Ein   | Eout  |
+|------------------|-------|-------|
+| AUC Score        | 0.503 | 0.511 |
+| Accuracy Score   | 0.503 | 0.499 |
+
+Vemos que nuestro modelo está unos 10 puntos por encima de un clasificador aleatorio, que aunque no es un resultado perfecto, nos da un umbral del 60% de discriminación.
+
+Vamos a ver ahora, a modo de curiosidad, que hubiera pasado si no hubieramos introducido regularización en nuestros modelos.
+
+| RF (Sin regularización) | Ein | Eout  |
+|-------------------------|-----|-------|
+| AUC Score               | 1.0 | 0.499 |
+| Accuracy Score          | 1.0 | 0.488 |
+
+Como vemos hay un sobreajuste enorme para el modelo sin regularización, teniendo una puntuación perfecta en los datos de entrenamiento pero un rendimiento pésimo en los datos de test, llegando a obtener peor clasificación que el clasificador aleatorio.
+
+Con todos estos datos, podemos afirmar que hemos entrenado un buen modelo y que generaliza bien, sin apenas sobreajuste. El resultado no es perfecto, y podría ser mejorable, pero el umbral de mejora tampoco es tan alto ya que en los diferentes papers que tratan este dataset, el máximo umbral de clasificación (AUC o Accuracy) es del 70%, donde se usan métodos más avanzados y se requiere de más potencia computacional de la que nosotros disponemos.
 
 Los errores calculados se han hecho con la metrica AUC o ROC AUC, dandonos esos resultados, bastante optimitas en el Ein, pero pesimos en el Etest, de los cuales Random Fores aproxima el Eout al Ein, mientras que las otros modelos son más distantes.
 Demostrando otra vez que **Random Forest** se ajusta más al modelo que otros algoritmos.
 
 ##TODO
 - Discutir idoniedad de los modelos para el problema
-- Clases de funciones a usar?
-- Explicar todos los parámetros de los modelos
-- Evaluación y comparación de modelos entrenados
 - Gráficas para comparación de error
-- Explicar elección del mejor modelo
-- Entrenar el mejor modelo (sin cross validation) y evaluarlo con test
-- Explicar resultados obtenidos en el test, con graficas y tal
-## Biografia
+- graficas y tal
+- Bibliografia
+
+## Bibliografia
 - (LinearSVC) https://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html
 - (Random Forest) https://www.iartificial.net/random-forest-bosque-aleatorio/#Random_Forest_en_scikit-learn_hiper-parametros_mas_utiles
 - (Random Forest) https://en.wikipedia.org/wiki/Random_forest
