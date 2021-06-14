@@ -125,21 +125,26 @@ plt.show()
 #array de valores de parametros razonables para la obtencion de parametros
 print("comprobando parametros a usar: ")
 print("--------------------------------------------------------------------------------------------------")
-param_grid = {'penalty': ['l1', 'l2'], 'dual': [False], 'C':[0.1, 0.5, 1,  5, 10], 'random_state': [0]}
+param_grid = {'penalty': ['l2'], 'loss':['hinge', 'squared_hinge'], 'dual': [False], 'random_state': [0]}
 modelo = GridSearchCV(svm.LinearSVC(), param_grid, scoring='roc_auc')
 modelo.fit(X_train, Y_train)
 print("--------------------------------------------------------------------------------------------------")
 print('Mejores parámetros del modelo LinearSVC: ', modelo.best_params_)
 
 #%% Linear SVC
+
 #creamos el modelo
-clf = svm.LinearSVC(C=0.0001, dual=False, random_state=0)
+clf = svm.LinearSVC( dual=False, random_state=0)
 
 #y entrenamos el modelo con la muestra dada
-#results = cross_validate(svm.LinearSVC(), X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
-#print('AUC  en Cross-Validation con LinearSVC (parametros por defecto)', results['test_score'].mean())
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
-print('AUC  en Cross-Validation con LinearSVC (sin los parametros por defecto)', results['test_score'].mean())
+print('AUC  en Cross-Validation con LinearSVC (sin regularizacion)', results['test_score'].mean())
+
+
+clf = svm.LinearSVC(C=0.00000000000000001, dual=False, random_state=0)
+
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+print('AUC  en Cross-Validation con LinearSVC (con regularizacion)', results['test_score'].mean())
 
 #%% Optimizacion parametros NN
 print("--------------------------------------------------------------------------------------------------1")
@@ -164,7 +169,7 @@ modelo.fit(X_train, Y_train)
 print("--------------------------------------------------------------------------------------------------")
 print('Mejores parámetros (neuronas por capa) del Perceptron de 3 capas: ', modelo.best_params_)
 print("--------------------------------------------------------------------------------------------------")
-param_grid= {'hidden_layer_sizes': [[52, 55]], 'activation':['logistic', 'tanh', 'relu'], 'alpha':[1.9], 'learning_rate_init':[0.001, 0.01], 'learning_rate':['constant', 'invscaling', 'adaptative']}
+param_grid= {'hidden_layer_sizes': [[52, 55]], 'activation':['logistic', 'tanh', 'relu'], 'learning_rate_init':[0.001, 0.01, 0.0001], 'learning_rate':['constant', 'invscaling', 'adaptative']}
 modelo = GridSearchCV(MLPClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
 modelo.fit(X_train, Y_train)
 print("--------------------------------------------------------------------------------------------------")
@@ -173,16 +178,24 @@ print('Mejores parámetros del Perceptron de 3 capas: ', modelo.best_params_)
 
 
 #%% Multilayer perceptron CV
-clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', alpha=0.01, learning_rate_init=0.01  )
+clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='tanh', learning_rate='invscaling', learning_rate_init=0.0001  )
 clf.fit(X_train, Y_train)
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
 
-print('Perceptrón 3 capas en Cross-Validation AUC Score', results['test_score'].mean())
+print('Perceptrón 3 capas sin regularizacion en Cross-Validation AUC Score', results['test_score'].mean())
+
+
+
+clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='tanh', learning_rate='invscaling', learning_rate_init=0.0001, alpha=20)
+clf.fit(X_train, Y_train)
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+
+print('Perceptrón 3 capas con regularizacion en Cross-Validation AUC Score', results['test_score'].mean())
 
 #%% RandomForest parametros
 start_time = time()
 print("--------------------------------------------------------------------------------------------------")
-param_grid = {'n_estimators': [200, 500], 'criterion': ['gini', 'entropy'], 'max_leaf_nodes': [2, 4, 6, 8], 'n_jobs':[-1], 'random_state':[0]}
+param_grid = {'n_estimators': [100,200,300,400, 500], 'criterion': ['gini', 'entropy'], 'n_jobs':[-1], 'random_state':[0], 'bootstrap':[True, False], 'oob_score':[True, False]}
 modelo = GridSearchCV(RandomForestClassifier(), param_grid, scoring='roc_auc', n_jobs=-1)
 modelo.fit(X_train, Y_train)
 print("--------------------------------------------------------------------------------------------------")
@@ -192,16 +205,24 @@ print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
 print('Mejores parámetros del Random Forest: ', modelo.best_params_)
 
 #%% RandomForest CV
-clf = RandomForestClassifier(n_jobs=-1)
-results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
-print('Random Forest (parametros por defecto) en Cross-Validation AUC Score', results['test_score'].mean())
+# clf = RandomForestClassifier(n_jobs=-1)
+# results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+# print('Random Forest (parametros por defecto) en Cross-Validation AUC Score', results['test_score'].mean())
 
 start_time = time()
-clf = RandomForestClassifier(n_estimators=500, criterion='entropy', max_leaf_nodes=8, n_jobs=-1)
+clf = RandomForestClassifier(n_estimators=500, criterion='entropy', oob_score=True, n_jobs=-1)
 results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
 elapsed_time = time() - start_time
 print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
-print('Random Forest (parametros modificados) en Cross-Validation AUC Score', results['test_score'].mean())
+print('Random Forest (sin regularizacion) en Cross-Validation AUC Score', results['test_score'].mean())
+
+
+start_time = time()
+clf = RandomForestClassifier(n_estimators=500, criterion='entropy', oob_score=True, max_leaf_nodes=4, n_jobs=-1)
+results = cross_validate(clf, X_train, Y_train, cv=5, n_jobs=-1, scoring='roc_auc')
+elapsed_time = time() - start_time
+print("Calculo Elapsed time: %0.10f seconds" %elapsed_time)
+print('Random Forest (con regularizacion) en Cross-Validation AUC Score', results['test_score'].mean())
 
 
 #%% SVM no lineal
@@ -228,7 +249,7 @@ X_test = np.append(X_test, columnas, axis=1)
 
 #%% Calculo Ein y Eout LinealSVC
 
-clf = svm.LinearSVC(C=0.0001, dual=False, random_state=0)
+clf = svm.LinearSVC(C=0.00000000000000001, dual=False, random_state=0)
 clf.fit(X_train, Y_train)
 print('AUC score linealSVC train', roc_auc_score(Y_train, clf.predict(X_train)))
 print('Accuracy score linealSVC train', accuracy_score(Y_train, clf.predict(X_train)))
@@ -238,7 +259,7 @@ print('Accuracy score linealSVC test', accuracy_score(Y_test, clf.predict(X_test
 
 
 #%% Calculo Ein y Eout MLP
-clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='logistic', alpha=0.01, learning_rate_init=0.01  )
+clf = MLPClassifier(hidden_layer_sizes=[52, 55], activation='tanh', learning_rate='invscaling', learning_rate_init=0.0001, alpha=20)
 clf.fit(X_train, Y_train)
 print('AUC score MLP train', roc_auc_score(Y_train, clf.predict(X_train)))
 print('Accuracy score MLP  train', accuracy_score(Y_train, clf.predict(X_train)))
@@ -248,7 +269,7 @@ print('Accuracy score MLP test', accuracy_score(Y_test, clf.predict(X_test)))
 
 
 #%% Calculo Ein y Eout Random Forest
-clf = RandomForestClassifier(n_estimators=500, criterion='entropy', max_leaf_nodes=2, n_jobs=-1, random_state=0)
+clf = RandomForestClassifier(n_estimators=500, criterion='entropy', oob_score=True, max_leaf_nodes=4, n_jobs=-1)
 clf.fit(X_train, Y_train)
 print('AUC score RF train', roc_auc_score(Y_train, clf.predict(X_train)))
 print('Accuracy score RF  train', accuracy_score(Y_train, clf.predict(X_train)))
